@@ -1213,55 +1213,178 @@ def _filter_results(results: List[BrandContent], brand_id: str) -> List[BrandCon
     return [r for r in results if r.brand_id == brand_id]
 
 
+def _md_to_html(content: str) -> str:
+    """Convert markdown-style content to semantic HTML with proper heading hierarchy."""
+    lines = content.strip().split("\n")
+    html_lines = []
+    in_list = False
+    skip_meta = False
+
+    for line in lines:
+        stripped = line.strip()
+
+        # Skip the Meta Tags section at the bottom (it's in the SEO fields)
+        if stripped.startswith("## Meta Tags") or stripped.startswith("## Meta tags"):
+            skip_meta = True
+            continue
+        if skip_meta:
+            continue
+
+        # Skip horizontal rules
+        if stripped == "---":
+            continue
+
+        # Headings
+        if stripped.startswith("# "):
+            if in_list:
+                html_lines.append("</ul>")
+                in_list = False
+            html_lines.append(f"<h1>{stripped[2:]}</h1>")
+        elif stripped.startswith("## "):
+            if in_list:
+                html_lines.append("</ul>")
+                in_list = False
+            html_lines.append(f"<h2>{stripped[3:]}</h2>")
+        elif stripped.startswith("### "):
+            if in_list:
+                html_lines.append("</ul>")
+                in_list = False
+            html_lines.append(f"<h3>{stripped[4:]}</h3>")
+        elif stripped.startswith("#### "):
+            if in_list:
+                html_lines.append("</ul>")
+                in_list = False
+            html_lines.append(f"<h4>{stripped[5:]}</h4>")
+        # List items
+        elif stripped.startswith("- "):
+            if not in_list:
+                html_lines.append("<ul>")
+                in_list = True
+            html_lines.append(f"<li>{stripped[2:]}</li>")
+        elif re.match(r'^\d+\.\s', stripped):
+            if not in_list:
+                html_lines.append("<ol>")
+                in_list = True
+            text = re.sub(r'^\d+\.\s', '', stripped)
+            html_lines.append(f"<li>{text}</li>")
+        # Bold lines (like **Address:** ...)
+        elif stripped.startswith("**") and ":**" in stripped:
+            if in_list:
+                html_lines.append("</ul>")
+                in_list = False
+            # Convert **Label:** value to <p><strong>Label:</strong> value</p>
+            converted = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', stripped)
+            html_lines.append(f"<p>{converted}</p>")
+        # Empty line
+        elif not stripped:
+            if in_list:
+                # Check if list type was <ol>
+                if html_lines and "<ol>" in html_lines[-len([l for l in html_lines if l.startswith("<li>")]):]:
+                    html_lines.append("</ol>")
+                else:
+                    html_lines.append("</ul>")
+                in_list = False
+        # Regular text
+        else:
+            if in_list:
+                html_lines.append("</ul>")
+                in_list = False
+            # Convert inline bold/emoji
+            converted = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', stripped)
+            if converted:  # skip truly empty
+                html_lines.append(f"<p>{converted}</p>")
+
+    if in_list:
+        html_lines.append("</ul>")
+
+    return "\n".join(html_lines)
+
+
+def _strip_meta_section(content: str) -> str:
+    """Remove the Meta Tags section from the bottom of content."""
+    lines = content.strip().split("\n")
+    result = []
+    for line in lines:
+        if line.strip().startswith("## Meta Tags") or line.strip().startswith("## Meta tags"):
+            break
+        result.append(line)
+    # Remove trailing --- and empty lines
+    while result and result[-1].strip() in ("", "---"):
+        result.pop()
+    return "\n".join(result)
+
+
 def _export_txt(items: List[BrandContent]) -> str:
     parts = []
     for r in items:
         parts.append(f"{'='*60}")
         parts.append(f"BRAND: {r.brand_name} ({r.brand_id})")
         parts.append(f"DOMAIN: {r.domain}")
-        parts.append(f"META TITLE: {r.meta_title}")
-        parts.append(f"META DESCRIPTION: {r.meta_description}")
         parts.append(f"{'='*60}")
-        parts.append(r.content)
+        parts.append("")
+        parts.append("[SEO]")
+        parts.append(f"Title: {r.meta_title}")
+        parts.append(f"Description: {r.meta_description}")
+        parts.append("")
+        parts.append("[CONTENT]")
+        parts.append(_strip_meta_section(r.content))
         parts.append("")
     return "\n".join(parts)
 
 
 def _export_html(items: List[BrandContent]) -> str:
-    html_parts = ['<!DOCTYPE html><html><head><meta charset="utf-8"><title>Location Content Export</title>'
-                  '<style>body{font-family:sans-serif;max-width:900px;margin:40px auto;padding:0 20px;}'
-                  '.brand{margin-bottom:40px;border-bottom:2px solid #ddd;padding-bottom:20px;}'
-                  '.meta{background:#fff3cd;padding:12px;border-radius:8px;margin-bottom:16px;}'
+    html_parts = ['<!DOCTYPE html><html><head><meta charset="utf-8"><title>Location Content Export</title>',
+                  '<style>',
+                  'body{font-family:sans-serif;max-width:900px;margin:40px auto;padding:0 20px;line-height:1.6;}',
+                  '.brand{margin-bottom:40px;border-bottom:2px solid #ddd;padding-bottom:20px;}',
+                  '.seo-meta{background:#fff3cd;padding:12px 16px;border-radius:8px;margin-bottom:20px;font-size:0.9em;}',
+                  '.seo-meta strong{color:#6d4c00;}',
+                  'h1{font-size:1.8em;} h2{font-size:1.4em;margin-top:1.5em;} h3{font-size:1.15em;margin-top:1.2em;}',
+                  'ul,ol{margin:0.5em 0;padding-left:1.5em;}',
                   '</style></head><body>']
     for r in items:
-        # Convert markdown-ish content to basic HTML
-        content_html = r.content.replace("\n", "<br>")
+        content_html = _md_to_html(r.content)
         html_parts.append(f'<div class="brand">')
-        html_parts.append(f'<h2>{r.brand_name} <small style="color:#888">({r.domain})</small></h2>')
-        html_parts.append(f'<div class="meta"><strong>Title:</strong> {r.meta_title}<br>')
-        html_parts.append(f'<strong>Description:</strong> {r.meta_description}</div>')
-        html_parts.append(f'<div>{content_html}</div></div>')
+        html_parts.append(f'<div class="seo-meta">')
+        html_parts.append(f'<strong>SEO Title:</strong> {r.meta_title}<br>')
+        html_parts.append(f'<strong>SEO Description:</strong> {r.meta_description}')
+        html_parts.append(f'</div>')
+        html_parts.append(content_html)
+        html_parts.append(f'</div>')
     html_parts.append('</body></html>')
     return "\n".join(html_parts)
 
 
 def _export_doc(items: List[BrandContent]) -> str:
-    """Simple HTML-based .doc format."""
-    html = _export_html(items)
-    return html  # .doc files can be HTML — Word opens them fine
+    """Simple HTML-based .doc format with semantic tags."""
+    return _export_html(items)
 
 
 def _export_csv(items: List[BrandContent]) -> str:
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(["brand_id", "brand_name", "domain", "meta_title", "meta_description", "content"])
+    writer.writerow(["brand_id", "brand_name", "domain", "seo_title", "seo_description", "content_html"])
     for r in items:
-        writer.writerow([r.brand_id, r.brand_name, r.domain, r.meta_title, r.meta_description, r.content])
+        content_html = _md_to_html(r.content)
+        writer.writerow([r.brand_id, r.brand_name, r.domain, r.meta_title, r.meta_description, content_html])
     return output.getvalue()
 
 
 def _export_json(items: List[BrandContent]) -> str:
-    return json.dumps([r.dict() for r in items], indent=2)
+    """JSON export with body as semantic HTML, separated from SEO fields."""
+    structured = []
+    for r in items:
+        structured.append({
+            "brand_id": r.brand_id,
+            "brand_name": r.brand_name,
+            "domain": r.domain,
+            "seo": {
+                "title": r.meta_title,
+                "description": r.meta_description,
+            },
+            "body": _md_to_html(r.content),
+        })
+    return json.dumps(structured, indent=2, ensure_ascii=False)
 
 
 # ── API Routes ─────────────────────────────────────────────────────────────────
