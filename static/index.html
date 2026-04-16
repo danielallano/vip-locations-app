@@ -25,7 +25,6 @@
       padding: 12px 0;
       color: #fff;
     }
-    .top-bar img { height: 34px; }
     .top-bar h1 { font-size: 1.15rem; font-weight: 600; margin: 0; }
     .top-bar p { font-size: 0.78rem; margin: 0; opacity: 0.75; }
 
@@ -52,33 +51,20 @@
     .btn-generate:hover { background: #0c4f7d; color: #fff; }
     .btn-generate:disabled { background: #6c8a9d; }
 
-    .result-card {
-      border-left: 4px solid var(--vip-teal);
-      background: #fff;
-      border-radius: 0 12px 12px 0;
-      margin-bottom: 24px;
-    }
-    .result-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 20px;
-      border-bottom: 1px solid var(--vip-border);
-      background: var(--vip-light);
-    }
     .brand-badge {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 700;
-      padding: 3px 10px;
+      padding: 2px 8px;
       border-radius: 20px;
       background: var(--vip-blue);
       color: #fff;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
     }
     .brand-badge.regional { background: #5c6bc0; }
     .brand-badge.microsite { background: #00897b; }
     .brand-badge.spanish { background: #e65100; }
+    .brand-badge.other { background: #757575; }
 
     .content-area {
       font-family: 'Courier New', monospace;
@@ -89,7 +75,7 @@
       border: 1px solid #e0e0e0;
       border-radius: 8px;
       padding: 16px;
-      max-height: 420px;
+      max-height: 500px;
       overflow-y: auto;
     }
 
@@ -102,16 +88,11 @@
     }
     .meta-box strong { color: #6d4c00; }
 
-    .copy-btn {
-      font-size: 0.8rem;
-      padding: 5px 14px;
-      border-radius: 6px;
-    }
+    .copy-btn { font-size: 0.8rem; padding: 5px 14px; border-radius: 6px; }
 
     .type-toggle .btn-check:checked + .btn { font-weight: 700; }
 
     .spinner-border-sm { width: 1rem; height: 1rem; }
-
     #statusBar { font-size: 0.85rem; }
 
     .select-all-link { font-size: 0.8rem; cursor: pointer; color: var(--vip-teal); }
@@ -128,6 +109,38 @@
       margin-top: 8px;
     }
     .brand-group-label:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+
+    /* Tabs */
+    .result-tabs .nav-link {
+      font-size: 0.82rem;
+      padding: 8px 16px;
+      color: #555;
+      border: 1px solid transparent;
+    }
+    .result-tabs .nav-link.active {
+      background: var(--vip-light);
+      border-color: var(--vip-border) var(--vip-border) #fff;
+      color: var(--vip-blue);
+      font-weight: 600;
+    }
+    .result-tabs .nav-link .tab-domain {
+      display: block;
+      font-size: 0.65rem;
+      color: #999;
+      font-weight: 400;
+    }
+    .tab-content { border: 1px solid var(--vip-border); border-top: none; border-radius: 0 0 12px 12px; background: #fff; }
+    .tab-pane { padding: 20px; }
+
+    .download-dropdown .dropdown-menu { font-size: 0.85rem; }
+
+    .brand-count-badge {
+      font-size: 0.7rem;
+      background: var(--vip-teal);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
   </style>
 </head>
 <body>
@@ -144,7 +157,7 @@
   </div>
 </div>
 
-<div class="container-fluid px-4 py-4" style="max-width: 1300px;">
+<div class="container-fluid px-4 py-4" style="max-width: 1400px;">
   <div class="row g-4">
 
     <!-- Left panel: Form -->
@@ -164,6 +177,14 @@
             <div class="form-text">Full address including street, city, state, ZIP</div>
           </div>
 
+          <!-- Doctor name (optional) -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">👨‍⚕️ Doctor Name <span class="text-muted fw-normal">(optional)</span></label>
+            <input type="text" id="doctorInput" class="form-control"
+              placeholder="e.g. Dr. Sarah Chen (optional)" autocomplete="off" />
+            <div class="form-text">If provided, adds a "Meet Your Doctor" section</div>
+          </div>
+
           <!-- Page type -->
           <div class="mb-3">
             <label class="form-label fw-semibold">📄 Page Type</label>
@@ -178,15 +199,16 @@
           <!-- Brand selection -->
           <div class="mb-3">
             <div class="d-flex align-items-center justify-content-between mb-1">
-              <label class="form-label fw-semibold mb-0">🏥 Select Brands</label>
+              <label class="form-label fw-semibold mb-0">🏥 Select Brands <span class="brand-count-badge" id="brandCount">0</span></label>
               <div class="d-flex gap-2">
                 <span class="select-all-link" onclick="selectAll()">All</span>
                 <span class="text-muted">|</span>
                 <span class="select-all-link" onclick="selectNone()">None</span>
+                <span class="text-muted">|</span>
+                <span class="select-all-link" onclick="autoDetectState()">Auto-detect</span>
               </div>
             </div>
-            <div id="brandList" class="border rounded p-3" style="background:#fafafa;">
-              <!-- Populated by JS -->
+            <div id="brandList" class="border rounded p-3" style="background:#fafafa; max-height: 400px; overflow-y: auto;">
               <div class="text-muted small">Loading brands...</div>
             </div>
           </div>
@@ -206,7 +228,6 @@
     <!-- Right panel: Results -->
     <div class="col-lg-8">
       <div id="resultsArea">
-        <!-- Placeholder -->
         <div id="placeholder" class="text-center py-5 text-muted">
           <i class="bi bi-file-earmark-text" style="font-size: 3rem; opacity: 0.3;"></i>
           <p class="mt-3">Enter an address, select brands, and click Generate.</p>
@@ -220,14 +241,42 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// ── Brand loader ──────────────────────────────────────────────────────────────
-let brands = [];
+// ── State → brand mapping for auto-detect ─────────────────────────────────────
+const STATE_BRAND_MAP = {
+  'TX': ['veintreatmenttx', 'veincenterstx'],
+  'CA': ['veintreatmentca', 'veincentersca', 'veinclinicsca', 'veintreatmentsd'],
+  'NY': ['veintreatmentnyc', 'veincentersny', 'veinclinicsny', 'veincliniclongisland', 'veintreatmentli', 'veincentersli'],
+  'NJ': ['veintreatmentnj', 'veincentersnj', 'veinclinicsnj'],
+  'MD': ['veintreatmentsmd', 'veincentersmd', 'veinclinicsmd'],
+  'CT': ['veintreatmentsct', 'veincentersct', 'veinclinicsct'],
+  'PA': ['paveincenters', 'paveinclinics'],
+};
+const NATIONAL_BRANDS = ['vip', 'vtc', 'veintreatment', 'veindoctor', 'venasvarices'];
 
+// State name to abbreviation
+const STATE_NAMES = {
+  'texas': 'TX', 'california': 'CA', 'new york': 'NY', 'new jersey': 'NJ',
+  'maryland': 'MD', 'connecticut': 'CT', 'pennsylvania': 'PA',
+  'long island': 'NY', 'san diego': 'CA', 'houston': 'TX', 'manhattan': 'NY',
+  'brooklyn': 'NY', 'queens': 'NY', 'bronx': 'NY', 'staten island': 'NY',
+};
+
+// Group order for rendering
+const GROUP_ORDER = [
+  'VIP Medical Group', 'VTC', 'PTS',
+  'Vein Treatment', 'Vein Centers', 'Vein Clinics', 'Other'
+];
+
+let brands = [];
+let lastResults = null;  // Store for export
+
+// ── Brand loader ──────────────────────────────────────────────────────────────
 async function loadBrands() {
   try {
     const resp = await fetch('/api/brands');
     brands = await resp.json();
     renderBrandList();
+    updateBrandCount();
   } catch (e) {
     document.getElementById('brandList').innerHTML = '<div class="text-danger small">Failed to load brands.</div>';
   }
@@ -235,44 +284,106 @@ async function loadBrands() {
 
 function renderBrandList() {
   const container = document.getElementById('brandList');
-  const groups = {
-    main: { label: 'Main Brands', items: [] },
-    microsite: { label: 'Microsites', items: [] },
-    regional: { label: 'Regional Sites', items: [] },
-  };
+  const groups = {};
+  for (const g of GROUP_ORDER) groups[g] = [];
 
   for (const b of brands) {
-    const g = groups[b.type] || groups.main;
-    g.items.push(b);
+    const g = groups[b.group] || (groups['Other'] = groups['Other'] || []);
+    if (groups[b.group]) groups[b.group].push(b);
+    else groups['Other'].push(b);
   }
 
   let html = '';
-  for (const [key, group] of Object.entries(groups)) {
-    if (!group.items.length) continue;
-    html += `<div class="brand-group-label">${group.label}</div>`;
-    for (const b of group.items) {
+  for (const gName of GROUP_ORDER) {
+    const items = groups[gName];
+    if (!items || !items.length) continue;
+    html += `<div class="brand-group-label">${escHtml(gName)} (${items.length})</div>`;
+    for (const b of items) {
       const isSpanish = b.language === 'es';
-      const badgeClass = key === 'regional' ? 'regional' : key === 'microsite' ? (isSpanish ? 'spanish' : 'microsite') : '';
+      const typeClass = b.type === 'regional' ? 'regional' : b.type === 'microsite' ? (isSpanish ? 'spanish' : 'microsite') : b.type === 'other' ? 'other' : '';
       html += `
         <div class="form-check brand-check py-1">
-          <input class="form-check-input brand-checkbox" type="checkbox" value="${b.id}" id="brand_${b.id}" checked />
+          <input class="form-check-input brand-checkbox" type="checkbox" value="${b.id}" id="brand_${b.id}"
+            onchange="updateBrandCount()" checked />
           <label class="form-check-label d-flex align-items-center gap-2" for="brand_${b.id}">
-            <span>${b.name}</span>
+            <span>${escHtml(b.name)}</span>
             ${isSpanish ? '<span class="brand-badge spanish">ES</span>' : ''}
           </label>
-          <div class="text-muted" style="font-size:0.72rem; margin-left:1.5rem;">${b.domain}</div>
+          <div class="text-muted" style="font-size:0.72rem; margin-left:1.5rem;">${escHtml(b.domain)}</div>
         </div>`;
     }
   }
   container.innerHTML = html;
 }
 
+function updateBrandCount() {
+  const count = document.querySelectorAll('.brand-checkbox:checked').length;
+  document.getElementById('brandCount').textContent = count;
+}
+
 function selectAll() {
   document.querySelectorAll('.brand-checkbox').forEach(cb => cb.checked = true);
+  updateBrandCount();
 }
 function selectNone() {
   document.querySelectorAll('.brand-checkbox').forEach(cb => cb.checked = false);
+  updateBrandCount();
 }
+
+function detectStateFromAddress(addr) {
+  const upper = addr.toUpperCase();
+  const lower = addr.toLowerCase();
+
+  // Try 2-letter state abbreviation
+  for (const st of Object.keys(STATE_BRAND_MAP)) {
+    // Match ", ST " or ", ST," or ", ST 0-9" (zip)
+    const re = new RegExp('[,\\s]' + st + '(?:[\\s,]|\\d|$)', 'i');
+    if (re.test(upper)) return st;
+  }
+
+  // Try full state names
+  for (const [name, abbr] of Object.entries(STATE_NAMES)) {
+    if (lower.includes(name)) return abbr;
+  }
+  return null;
+}
+
+function autoDetectState() {
+  const addr = document.getElementById('addressInput').value.trim();
+  if (!addr) {
+    alert('Enter an address first, then click Auto-detect.');
+    return;
+  }
+
+  const state = detectStateFromAddress(addr);
+
+  // Uncheck all first
+  document.querySelectorAll('.brand-checkbox').forEach(cb => cb.checked = false);
+
+  // Check national brands
+  for (const id of NATIONAL_BRANDS) {
+    const cb = document.getElementById('brand_' + id);
+    if (cb) cb.checked = true;
+  }
+
+  // Check state-specific brands
+  if (state && STATE_BRAND_MAP[state]) {
+    for (const id of STATE_BRAND_MAP[state]) {
+      const cb = document.getElementById('brand_' + id);
+      if (cb) cb.checked = true;
+    }
+  }
+
+  updateBrandCount();
+}
+
+// Auto-detect on address blur
+document.addEventListener('DOMContentLoaded', () => {
+  const addrInput = document.getElementById('addressInput');
+  addrInput.addEventListener('blur', () => {
+    if (addrInput.value.trim()) autoDetectState();
+  });
+});
 
 
 // ── Generate ──────────────────────────────────────────────────────────────────
@@ -280,6 +391,7 @@ async function generateContent() {
   const address = document.getElementById('addressInput').value.trim();
   const pageType = document.querySelector('input[name="pageType"]:checked').value;
   const brandIds = [...document.querySelectorAll('.brand-checkbox:checked')].map(cb => cb.value);
+  const doctorName = document.getElementById('doctorInput').value.trim() || null;
 
   if (!address) {
     alert('Please enter a clinic address.');
@@ -295,16 +407,19 @@ async function generateContent() {
   const status = document.getElementById('statusBar');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
-  status.innerHTML = `<span class="text-info">Calling GPT-4o-mini for ${brandIds.length} brand(s)... this may take 15–30s</span>`;
+  status.innerHTML = `<span class="text-info">Calling GPT-4o-mini for ${brandIds.length} brand(s)... this may take 15–60s</span>`;
 
   const resultsArea = document.getElementById('resultsArea');
   resultsArea.innerHTML = '';
 
   try {
+    const body = { address, brand_ids: brandIds, page_type: pageType };
+    if (doctorName) body.doctor_name = doctorName;
+
     const resp = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ address, brand_ids: brandIds, page_type: pageType }),
+      body: JSON.stringify(body),
     });
 
     if (!resp.ok) {
@@ -313,6 +428,7 @@ async function generateContent() {
     }
 
     const data = await resp.json();
+    lastResults = data.results;
     renderResults(data);
     status.innerHTML = `<span class="text-success">✅ Generated content for ${data.results.length} brand(s)</span>`;
   } catch (e) {
@@ -325,56 +441,144 @@ async function generateContent() {
 }
 
 
-// ── Render results ────────────────────────────────────────────────────────────
+// ── Render results with tabs ──────────────────────────────────────────────────
 function renderResults(data) {
   const area = document.getElementById('resultsArea');
-  area.innerHTML = `
+
+  // Header with download-all dropdown
+  let headerHtml = `
     <div class="d-flex align-items-center justify-content-between mb-3">
       <div>
-        <h5 class="mb-0">Results</h5>
+        <h5 class="mb-0">Results <span class="brand-count-badge">${data.results.length} brands</span></h5>
         <small class="text-muted">${escHtml(data.address)} — ${data.page_type === 'open' ? '✅ Open' : '🚧 Coming Soon'}</small>
       </div>
-      <button class="btn btn-sm btn-outline-secondary" onclick="copyAll()">
-        <i class="bi bi-clipboard-plus"></i> Copy All
-      </button>
+      <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary" onclick="copyAll()">
+          <i class="bi bi-clipboard-plus"></i> Copy All
+        </button>
+        <div class="dropdown download-dropdown">
+          <button class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="bi bi-download"></i> Download All
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#" onclick="downloadAll('csv'); return false;"><i class="bi bi-filetype-csv me-2"></i>CSV</a></li>
+            <li><a class="dropdown-item" href="#" onclick="downloadAll('json'); return false;"><i class="bi bi-filetype-json me-2"></i>JSON</a></li>
+            <li><a class="dropdown-item" href="#" onclick="downloadAll('txt'); return false;"><i class="bi bi-filetype-txt me-2"></i>TXT</a></li>
+            <li><a class="dropdown-item" href="#" onclick="downloadAll('html'); return false;"><i class="bi bi-filetype-html me-2"></i>HTML</a></li>
+            <li><a class="dropdown-item" href="#" onclick="downloadAll('doc'); return false;"><i class="bi bi-file-earmark-word me-2"></i>DOC</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
   `;
 
-  for (const r of data.results) {
-    const brand = brands.find(b => b.id === r.brand_id) || {};
-    const badgeClass = brand.type === 'regional' ? 'regional' : brand.type === 'microsite' ? (brand.language === 'es' ? 'spanish' : 'microsite') : '';
-    const contentId = `content_${r.brand_id}`;
+  // Build tabs nav
+  let tabsNav = '<ul class="nav nav-tabs result-tabs" role="tablist">';
+  let tabsContent = '<div class="tab-content">';
 
-    area.innerHTML += `
-      <div class="result-card shadow-sm mb-4">
-        <div class="result-header">
-          <div class="flex-grow-1">
-            <div class="fw-bold">${escHtml(r.brand_name)}</div>
-            <div class="text-muted" style="font-size:0.78rem;">${escHtml(brand.domain || '')}</div>
+  data.results.forEach((r, i) => {
+    const brand = brands.find(b => b.id === r.brand_id) || {};
+    const active = i === 0 ? 'active' : '';
+    const show = i === 0 ? 'show active' : '';
+    const tabId = `tab-${r.brand_id}`;
+    const paneId = `pane-${r.brand_id}`;
+    const typeClass = brand.type === 'regional' ? 'regional' : brand.type === 'microsite' ? (brand.language === 'es' ? 'spanish' : 'microsite') : brand.type === 'other' ? 'other' : '';
+
+    tabsNav += `
+      <li class="nav-item" role="presentation">
+        <button class="nav-link ${active}" id="${tabId}" data-bs-toggle="tab" data-bs-target="#${paneId}" type="button" role="tab">
+          ${escHtml(r.brand_name)}
+          <span class="tab-domain">${escHtml(brand.domain || r.domain || '')}</span>
+        </button>
+      </li>`;
+
+    tabsContent += `
+      <div class="tab-pane fade ${show}" id="${paneId}" role="tabpanel" aria-labelledby="${tabId}">
+        <!-- Actions bar -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="d-flex align-items-center gap-2">
+            <span class="brand-badge ${typeClass}">${brand.type || 'main'}</span>
+            <span class="text-muted" style="font-size:0.78rem;">${escHtml(brand.domain || r.domain || '')}</span>
           </div>
-          <span class="brand-badge ${badgeClass}">${brand.type || 'main'}</span>
-          <button class="btn btn-sm btn-outline-primary copy-btn" onclick="copySection('${contentId}')">
-            <i class="bi bi-clipboard"></i> Copy
-          </button>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary copy-btn" onclick="copySection('content_${r.brand_id}')">
+              <i class="bi bi-clipboard"></i> Copy
+            </button>
+            <div class="dropdown download-dropdown">
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="bi bi-download"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="downloadBrand('${r.brand_id}', 'txt'); return false;">TXT</a></li>
+                <li><a class="dropdown-item" href="#" onclick="downloadBrand('${r.brand_id}', 'html'); return false;">HTML</a></li>
+                <li><a class="dropdown-item" href="#" onclick="downloadBrand('${r.brand_id}', 'doc'); return false;">DOC</a></li>
+                <li><a class="dropdown-item" href="#" onclick="downloadBrand('${r.brand_id}', 'json'); return false;">JSON</a></li>
+              </ul>
+            </div>
+          </div>
         </div>
 
-        <!-- Meta tags box -->
-        <div class="px-3 pt-3">
-          <div class="meta-box">
-            <div class="mb-1"><strong>Title:</strong> ${escHtml(r.meta_title)}</div>
-            <div><strong>Meta description:</strong> ${escHtml(r.meta_description)}</div>
-          </div>
+        <!-- Meta tags -->
+        <div class="meta-box mb-3">
+          <div class="mb-1"><strong>Title:</strong> ${escHtml(r.meta_title)}</div>
+          <div><strong>Meta description:</strong> ${escHtml(r.meta_description)}</div>
         </div>
 
         <!-- Content -->
-        <div class="p-3">
-          <div class="content-area" id="${contentId}">${escHtml(r.content)}</div>
-        </div>
-      </div>
-    `;
+        <div class="content-area" id="content_${r.brand_id}">${escHtml(r.content)}</div>
+      </div>`;
+  });
+
+  tabsNav += '</ul>';
+  tabsContent += '</div>';
+
+  area.innerHTML = headerHtml + tabsNav + tabsContent;
+}
+
+
+// ── Export / download helpers ─────────────────────────────────────────────────
+async function downloadAll(format) {
+  if (!lastResults || !lastResults.length) return;
+  await doExport(lastResults, format, 'all');
+}
+
+async function downloadBrand(brandId, format) {
+  if (!lastResults || !lastResults.length) return;
+  const filtered = lastResults.filter(r => r.brand_id === brandId);
+  await doExport(filtered, format, brandId);
+}
+
+async function doExport(results, format, brandId) {
+  try {
+    const resp = await fetch('/api/export', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ results, format, brand_id: brandId }),
+    });
+    if (!resp.ok) {
+      const err = await resp.json();
+      alert('Export failed: ' + (err.detail || 'Unknown error'));
+      return;
+    }
+    const blob = await resp.blob();
+    const cd = resp.headers.get('Content-Disposition') || '';
+    const match = cd.match(/filename="(.+?)"/);
+    const filename = match ? match[1] : `location-content.${format}`;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    alert('Export failed: ' + e.message);
   }
 }
 
+
+// ── Utility ───────────────────────────────────────────────────────────────────
 function escHtml(s) {
   return String(s)
     .replace(/&/g, '&amp;')
@@ -386,7 +590,7 @@ function escHtml(s) {
 function copySection(id) {
   const el = document.getElementById(id);
   navigator.clipboard.writeText(el.innerText).then(() => {
-    const btn = el.closest('.result-card').querySelector('.copy-btn');
+    const btn = el.closest('.tab-pane').querySelector('.copy-btn');
     const orig = btn.innerHTML;
     btn.innerHTML = '<i class="bi bi-check2"></i> Copied!';
     btn.classList.replace('btn-outline-primary', 'btn-success');
@@ -400,9 +604,7 @@ function copySection(id) {
 function copyAll() {
   const all = [...document.querySelectorAll('.content-area')].map(el => el.innerText).join('\n\n' + '='.repeat(60) + '\n\n');
   navigator.clipboard.writeText(all).then(() => {
-    const btn = event.target.closest('button');
-    btn.innerHTML = '<i class="bi bi-check2"></i> All Copied!';
-    setTimeout(() => { btn.innerHTML = '<i class="bi bi-clipboard-plus"></i> Copy All'; }, 2000);
+    // Brief feedback would need the button reference; fine as is
   });
 }
 
