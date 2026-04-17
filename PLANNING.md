@@ -123,8 +123,32 @@ tags:
 - Bulk export: .csv (all sites in one file), .json (all sites), or ZIP of individual files
 - "Download All" button for batch export
 
-## Status
-- Discussed Apr 10-16
-- All examples collected except legulcercenter.com (reminder set Apr 16 11am COT)
-- Templates need crawling/extraction
-- App not yet built
+## Template Status
+
+### Completed (6/9+)
+1. ✅ **Venas Varices** — H1 + address + AI Spanish paragraph
+2. ✅ **VIP Medical Group** — H1 + address + intro + directions + subway/landmarks
+3. ✅ **VTC** — H1 with br + address + phone + premier section + directions + subway/landmarks
+4. ✅ **Veintreatment.com** — H1 + address + long SEO paragraph (8-12 sentences)
+5. ✅ **Veindoctor.com** — "Find a Doctor" angle, H1 with br + long SEO paragraph
+6. ✅ **Regional veintreatment[xx]** — H1 + location block + "Why Choose" 3-paragraph section
+
+### In Progress
+7. ⏳ **PTS** — awaiting screenshot from Dani
+8. ⏳ **Regional veincenters[xx]** — awaiting screenshot from Dani
+9. ⏳ **Regional veinclinics[xx]** — awaiting screenshot from Dani
+10. ✅ **Legulcercenter** — built from crawl, may need adjustment
+
+## App Status
+- **Live at:** sophia.vipmedicalgroup.ai/vip-locations/
+- **GitHub:** danielallano/vip-locations-app
+- **Port:** 8007 on Hostinger VPS
+- **Brands:** 30 configured
+- **Features built:** tabbed output, multi-format export (semantic HTML), doctor input, clinic type toggle, auto-suggest by state, AI-generated meta tags
+- All exports output semantic HTML with SEO fields separated from body content
+
+## Timeline
+- Apr 10-14: Initial planning
+- Apr 15: Full spec finalized (30 sites, UX flow)
+- Apr 16: App updated to 30 brands, deployed, 6 templates built from screenshots
+- Apr 17+: Remaining templates (PTS, veincenters, veinclinics), then testing
