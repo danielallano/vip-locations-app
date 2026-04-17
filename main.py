@@ -61,6 +61,14 @@ class ExportRequest(BaseModel):
     brand_id: Optional[str] = "all"
 
 
+# ── Content rules (shared across all AI prompts) ─────────────────────────────
+
+CONTENT_RULES = """
+IMPORTANT CONTENT RULES:
+- Do NOT mention VenaSeal as a treatment. We do not offer it.
+- Do NOT use the phrase "state-of-the-art". Use alternatives like "advanced", "modern", "cutting-edge", or just describe the specific technology.
+"""
+
 # ── AI helper ─────────────────────────────────────────────────────────────────
 
 def get_location_context(address: str, brand: dict, page_type: str, language: str = "en") -> dict:
@@ -181,6 +189,8 @@ Return a JSON object with:
 
 5. "meta_description": SEO description, 150-160 chars max. Include keywords (spider veins, varicose veins, vein treatment), city, and CTA.
 
+
+{CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
     try:
@@ -277,12 +287,14 @@ Return a JSON object with:
    - Custom treatment plans
    - Welcoming and professional tone
    
-   Style reference: "If you're struggling with spider veins, varicose veins, or leg discomfort, our team of board-certified vein specialists in [location] is here to help. Visit us at [address] for a personalized evaluation and modern, minimally invasive vein care. Do you often notice leg pain, heaviness, swelling, or restless legs, especially after long hours of standing or sitting? These symptoms may be signs of chronic venous insufficiency (CVI). A common vein condition that affects circulation and can lead to visible veins or more serious complications if left untreated. At our [location] vein clinic, we use state-of-the-art duplex ultrasound technology to map your leg veins and pinpoint the exact cause of your symptoms. Our doctors then create a custom treatment plan designed to improve both your vein health and comfort."
+   Style reference: "If you're struggling with spider veins, varicose veins, or leg discomfort, our team of board-certified vein specialists in [location] is here to help. Visit us at [address] for a personalized evaluation and modern, minimally invasive vein care. Do you often notice leg pain, heaviness, swelling, or restless legs, especially after long hours of standing or sitting? These symptoms may be signs of chronic venous insufficiency (CVI). A common vein condition that affects circulation and can lead to visible veins or more serious complications if left untreated. At our [location] vein clinic, we use advanced duplex ultrasound technology to map your leg veins and pinpoint the exact cause of your symptoms. Our doctors then create a custom treatment plan designed to improve both your vein health and comfort."
 
 2. "meta_title": SEO title, 50-60 chars max. Include "vein treatment" + city/location.
 
 3. "meta_description": SEO description, 150-160 chars max. Include keywords, location, and CTA.
 
+
+{CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
     try:
@@ -377,6 +389,8 @@ Return a JSON object with:
 
 5. "meta_description": SEO description, 150-160 chars max. Include keywords, city, and CTA ("Book today", "Schedule now", etc.)
 
+
+{CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
     try:
@@ -479,6 +493,8 @@ Return a JSON object with:
 
 IMPORTANT: Use the correct pronouns ({p['subject']}/{p['object']}/{p['possessive']}) consistently throughout. The content should closely follow the structure described but feel natural, not templated.
 
+
+{CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
     try:
@@ -657,6 +673,8 @@ Return a JSON object with:
 
 3. "meta_description": SEO description, 150-160 chars max. Include "vein doctor", "vein specialist", location, and CTA.
 
+
+{CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
     try:
@@ -725,7 +743,7 @@ def build_content_legulcercenter(brand: dict, address: str, page_type: str, ctx:
 
 **Address:** {address}
 
-Welcome to our state-of-the-art Vein Treatment Clinic coming soon to {hood}, {city_state}! Our clinic will specialize in compassionate, effective care for individuals seeking relief from varicose veins, spider veins, venous leg ulcers, and other vascular concerns.
+Welcome to our Vein Treatment Clinic, opening soon in {hood}, {city_state}! Our clinic will specialize in compassionate, effective care for individuals seeking relief from varicose veins, spider veins, venous leg ulcers, and other vascular concerns.
 
 📞 **Call us to learn more or book in advance:** {phone}
 
@@ -790,7 +808,7 @@ We understand that quality health care still needs to be affordable. Before we t
 ## FAQ
 
 ### What is the best vein treatment?
-Your vein doctor will decide on the optimal vein treatment following your initial appointment and a discussion of your unique treatment objectives. Sclerotherapy, radiofrequency ablation, and VenaSeal are some of the best remedies for varicose and spider veins.
+Your vein doctor will decide on the optimal vein treatment following your initial appointment and a discussion of your unique treatment objectives. Sclerotherapy and radiofrequency ablation are some of the most effective remedies for varicose and spider veins.
 
 ### How much does it cost to treat veins?
 Most major insurances, including Medicare, frequently pay for vein treatments. However, the price might range from $800 to $3000 if you choose to pay cash.
@@ -803,16 +821,16 @@ No. Most of the healthcare professionals we work with don't need a referral from
 ## Meta Tags
 
 **Title:** Vein Treatment Clinic in {hood}, {state} | Coming Soon
-**Meta description:** Coming soon to {hood}, {city_state}. State-of-the-art vein treatment clinic with Harvard-trained specialists. Zero downtime procedures. Insurance accepted. Call {phone}.
+**Meta description:** Coming soon to {hood}, {city_state}. Harvard-trained vein specialists. Zero downtime procedures. Insurance accepted. Call {phone}.
 """
         meta_title = f"Vein Treatment Clinic in {hood}, {state} | Coming Soon"
-        meta_desc = f"Coming soon to {hood}, {city_state}. State-of-the-art vein treatment clinic with Harvard-trained specialists. Zero downtime procedures. Insurance accepted. Call {phone}."
+        meta_desc = f"Coming soon to {hood}, {city_state}. Harvard-trained vein specialists. Zero downtime procedures. Insurance accepted. Call {phone}."
     else:
         content = f"""# Vein Treatment Clinic in {page_title_loc}
 
 **Address:** {address}
 
-Welcome to our state-of-the-art Vein Treatment Clinic in {hood}, {city_state}! Conveniently located {local_phrase}, our clinic specializes in compassionate, effective care for individuals seeking relief from varicose veins, spider veins, venous leg ulcers, and other vascular concerns.
+Welcome to our Vein Treatment Clinic in {hood}, {city_state}! Conveniently located {local_phrase}, our clinic specializes in compassionate, effective care for individuals seeking relief from varicose veins, spider veins, venous leg ulcers, and other vascular concerns.
 
 Our experienced team of medical professionals is committed to improving your vascular health and enhancing your overall well-being. Using the latest minimally invasive techniques and advanced technology, we create personalized treatment plans tailored to your unique needs and lifestyle.
 
@@ -883,7 +901,7 @@ We understand that quality health care still needs to be affordable. Before we t
 ## FAQ
 
 ### What is the best vein treatment?
-Your vein doctor will decide on the optimal vein treatment following your initial appointment and a discussion of your unique treatment objectives. Sclerotherapy, radiofrequency ablation, and VenaSeal are some of the best remedies for varicose and spider veins.
+Your vein doctor will decide on the optimal vein treatment following your initial appointment and a discussion of your unique treatment objectives. Sclerotherapy and radiofrequency ablation are some of the most effective remedies for varicose and spider veins.
 
 ### How much does it cost to treat veins?
 Most major insurances, including Medicare, frequently pay for vein treatments. However, the price might range from $800 to $3000 if you choose to pay cash.
@@ -902,10 +920,10 @@ No. Most of the healthcare professionals we work with don't need a referral from
 ## Meta Tags
 
 **Title:** Vein Treatment Clinic in {hood}, {state} | Leg Ulcer Center
-**Meta description:** State-of-the-art vein treatment in {hood}, {city_state}. Harvard-trained specialists, zero downtime procedures, insurance accepted. Visit our {hood} clinic today. Call {phone}.
+**Meta description:** Expert vein treatment in {hood}, {city_state}. Harvard-trained specialists, zero downtime procedures, insurance accepted. Visit our {hood} clinic today. Call {phone}.
 """
         meta_title = f"Vein Treatment Clinic in {hood}, {state} | Leg Ulcer Center"
-        meta_desc = f"State-of-the-art vein treatment in {hood}, {city_state}. Harvard-trained specialists, zero downtime procedures, insurance accepted. Visit our {hood} clinic today. Call {phone}."
+        meta_desc = f"Expert vein treatment in {hood}, {city_state}. Harvard-trained specialists, zero downtime procedures, insurance accepted. Visit our {hood} clinic today. Call {phone}."
 
     return content, meta_title, meta_desc
 
@@ -932,7 +950,7 @@ Return a JSON object with:
 
 1. "paragraph_1": First paragraph (3-4 sentences). Topic: Symptom awareness. Mention that residents of {city}, {state} may not realize they should visit a vein treatment clinic when they first notice symptoms like restless leg syndrome, throbbing leg veins, frequent leg cramps, leg pain, and leg swelling. These symptoms may indicate vein disease and can worsen over time if untreated.
 
-2. "paragraph_2": Second paragraph (3-4 sentences). Topic: What happens at consultation. At {hood} Vein Treatment Clinic, our skilled and nationally-renowned vein doctors take time to understand concerns, develop personalized treatment plans. During consultation: examine leg veins, discuss symptoms, review medical history, determine if underlying chronic venous insufficiency. Create treatment plan with minimally invasive procedures: radiofrequency ablation, VenaSeal, sclerotherapy.
+2. "paragraph_2": Second paragraph (3-4 sentences). Topic: What happens at consultation. At {hood} Vein Treatment Clinic, our skilled and nationally-renowned vein doctors take time to understand concerns, develop personalized treatment plans. During consultation: examine leg veins, discuss symptoms, review medical history, determine if underlying chronic venous insufficiency. Create treatment plan with minimally invasive procedures: radiofrequency ablation, sclerotherapy.
 
 3. "paragraph_3": Third paragraph (2-3 sentences). Topic: Quick treatment + CTA. Vein treatments in {hood} typically conclude within an hour, involve no downtime, return to daily activities and work immediately. Don't let vein disease progress. Contact us today to schedule consultation and take first step towards healthier legs.
 
@@ -940,6 +958,8 @@ Return a JSON object with:
 
 5. "meta_description": SEO description, 150-160 chars max. Include keywords, location, and CTA.
 
+
+{CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
     try:
@@ -1028,22 +1048,21 @@ Return a JSON object with:
    a) "ABVLM Certification" — Hand-picked ABVLM-certified experts. American Board of Venous and Lymphatic Medicine certifies top 1% vein doctors. Most effective vein care standards.
    b) "Vascular Imaging Training" — Registered physicians in vascular imaging. Can identify and treat root cause of spider veins and varicose veins, not just visible symptoms. Long-lasting results with negligible recurrence risk.
    c) "Personalized Vein Care" — Believe in personalized vein care. Discuss symptoms and goals, examine leg veins, run advanced diagnostic tests. Highlight all treatment options with pros and cons.
-   d) "Minimally Invasive Treatments" — Only minimally invasive treatments (radiofrequency ablation, venaseal, sclerotherapy). Under local anesthesia, 30 minutes, no downtime or major complications. Resume activities immediately.
+   d) "Minimally Invasive Treatments" — Only minimally invasive treatments (radiofrequency ablation, sclerotherapy, ClariVein). Under local anesthesia, 30 minutes, no downtime or major complications. Resume activities immediately.
    e) "No Surprise Billing" — Strict "no surprise billing" policy. Complete cost overview before procedure. Accept all major insurance plans including Medicare. Help maximize coverage.
 
    Localize each reason by mentioning {city} or {hood} naturally. Don't just copy — rephrase naturally while keeping the key points.
 
 2. "treatment_journey_intro": A paragraph (4-6 sentences) about what to expect at a consultation. Mention: board-certified doctors examine leg veins, discuss symptoms and goals, review medical history, run vascular imaging tests. Determine if spider/varicose veins are symptomatic of chronic venous insufficiency. Recommend minimally invasive treatments addressing root cause while providing cosmetic relief.
 
-3. "treatment_list": Array of exactly 6 strings, each a treatment with brief description:
+3. "treatment_list": Array of exactly 5 strings, each a treatment with brief description:
    - Endovenous ablation (radiofrequency and laser) for chronic venous insufficiency and large varicose veins
-   - VenaSeal (vein glue) for chronic venous insufficiency and twisted varicose veins
    - ClariVein (mechanochemical ablation) for extremely twisted varicose veins and underlying venous insufficiency
    - Sclerotherapy for spider veins and superficial varicose veins
    - Foam sclerotherapy for cosmetic treatment of larger varicose veins
    - Phlebectomy for large varicose veins
 
-4. "directions_intro": One sentence introducing the clinic location, including the full address naturally. Style: "Our state-of-the-art vein clinic in {city}, {state}, is located in {address}."
+4. "directions_intro": One sentence introducing the clinic location, including the full address naturally. Style: "Our vein clinic in {city}, {state}, is conveniently located at {address}."
 
 5. "neighborhood_directions": Array of 4-6 objects, each with "neighborhood" (name) and "direction" (one short sentence with road/landmark-based driving direction). Use real nearby neighborhoods.
 
@@ -1051,6 +1070,8 @@ Return a JSON object with:
 
 7. "meta_description": SEO description, 150-160 chars max. Include keywords and CTA.
 
+
+{CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
     try:
@@ -1076,13 +1097,12 @@ Return ONLY valid JSON. No markdown."""
             "treatment_journey_intro": f"When you schedule a consultation at our vein clinics in {state} ({city}), you can expect a thoroughly comprehensive diagnosis and evaluation.",
             "treatment_list": [
                 "Endovenous ablation (radiofrequency and laser) for chronic venous insufficiency and large varicose veins",
-                "VenaSeal (vein glue) for chronic venous insufficiency and twisted varicose veins",
                 "ClariVein (mechanochemical ablation) for extremely twisted varicose veins and underlying venous insufficiency",
                 "Sclerotherapy for spider veins and superficial varicose veins",
                 "Foam sclerotherapy for cosmetic treatment of larger varicose veins",
                 "Phlebectomy for large varicose veins",
             ],
-            "directions_intro": f"Our state-of-the-art vein clinic in {city}, {state}, is located in {address}.",
+            "directions_intro": f"Our vein clinic in {city}, {state}, is conveniently located at {address}.",
             "neighborhood_directions": [
                 {"neighborhood": "Nearby Area 1", "direction": "Take Main St toward the clinic."},
                 {"neighborhood": "Nearby Area 2", "direction": "Head south on Highway 1."},
@@ -1176,9 +1196,8 @@ Return a JSON object with:
    - Paragraph 3: The vein center is led by board-certified doctors focused on long-lasting relief. They identify and treat underlying venous insufficiency using advanced duplex ultrasound. Minimally invasive treatments. Perfect track records.
    - Paragraph 4: Doctors have highest skills, specialize in vascular imaging, ABVLM certified. Encourage scheduling an appointment.
 
-2. "treatments": Array of exactly 5 objects with "name" and "description":
+2. "treatments": Array of exactly 4 objects with "name" and "description":
    - Endovenous Ablation: Thermal energy or laser to destroy unhealthy veins responsible for spider and varicose veins
-   - VenaSeal: Medical-grade adhesive seals unhealthy veins' walls, making them collapse and get absorbed
    - ClariVein: Catheter with rotating tip mechanically damages vein walls while delivering sclerosant medicine
    - Sclerotherapy: Medicine (sclerosant) injected into small varicose and spider veins to collapse walls, making them fade
    - Phlebectomy: Unhealthy bulging veins extracted via small incisions
@@ -1188,7 +1207,7 @@ Return a JSON object with:
    1. Board-certified and Harvard-trained vein specialists
    2. Only minimally invasive treatments for all vein conditions
    3. Advanced vascular imaging tests to treat root cause
-   4. State-of-the-art vein centers accredited by IAC
+   4. IAC-accredited vein centers with cutting-edge technology
    5. Perfect track record and 5-star ratings
    6. "No surprise billing" policy with complete cost transparency
    7. Accept all major insurance plans including Medicare
@@ -1205,6 +1224,8 @@ Return a JSON object with:
 
 8. "meta_description": SEO description, 150-160 chars. Keywords + CTA.
 
+
+{CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
     try:
@@ -1228,7 +1249,6 @@ Return ONLY valid JSON. No markdown."""
             ],
             "treatments": [
                 {"name": "Endovenous Ablation", "description": "Thermal energy or laser energy is used to destroy the unhealthy veins responsible for spider veins and varicose veins."},
-                {"name": "VenaSeal", "description": "A medical-grade adhesive is used to seal the unhealthy veins' walls, making them eventually collapse and get absorbed by the body."},
                 {"name": "ClariVein", "description": "A catheter with a rotating tip is inserted into the diseased vein to mechanically damage its walls while delivering a sclerosant medicine."},
                 {"name": "Sclerotherapy", "description": "A medicine called sclerosant is injected into small varicose veins and spider veins to collapse their walls, making them fade away from the skin."},
                 {"name": "Phlebectomy", "description": "The unhealthy and bulging veins are extracted from the body via small incisions."},
@@ -1237,11 +1257,11 @@ Return ONLY valid JSON. No markdown."""
                 f"Your vein treatment is handled by board-certified and Harvard-trained vein specialists.",
                 "We only provide minimally invasive vein treatments for all vein conditions.",
                 "We use advanced vascular imaging tests to treat the root cause of your vein problems.",
-                f"Our state-of-the-art vein centers in {state} are accredited by the IAC.",
+                f"Our IAC-accredited vein centers in {state} use cutting-edge technology.",
                 "We maintain a perfect track record and 5-star ratings from all patients.",
                 'Our "no surprise billing" policy guarantees complete transparency with costs.',
                 "We accept all major insurance plans, including Medicare.",
-                f"Our state-of-the-art vein centers in {region} are conveniently located in {city}.",
+                f"Our vein centers in {region} are conveniently located in {city}.",
             ],
             "meet_doctors_paragraph": f"Our spider vein and varicose vein center in {hood} is led by Ivy league-trained doctors. Our vein doctors have passed numerous rigorous tests and professional milestones to receive formal recognition from the American Board of Venous and Lymphatic Medicine (ABVLM), a gold standard that most vein doctors aspire to. Furthermore, they specialize in the latest vascular imaging techniques and minimally invasive vein treatments, making them uniquely capable of addressing the root cause of your vein problems.",
             "directions_intro": f"Our vein center in {hood} is located at {address}, conveniently accessible for patients throughout the area.",

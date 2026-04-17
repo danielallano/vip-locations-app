@@ -702,7 +702,6 @@ BRANDS = {
         "treatments": [
             "Sclerotherapy",
             "Radiofrequency Ablation (RFA)",
-            "VenaSeal",
             "Ultrasound-guided vein mapping",
             "Spider vein treatment",
         ],
