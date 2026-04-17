@@ -374,7 +374,7 @@ def build_content_vip(brand: dict, address: str, page_type: str, ctx: dict, doct
     meta_title = ai.get("meta_title", f"Vein Treatment in {hood} | VIP Medical Group")
     meta_description = ai.get("meta_description", f"Expert vein treatment in {hood}, {city_state}. Book today.")
 
-    coming_soon_label = " — Coming Soon" if page_type == "coming_soon" else ""
+    coming_soon_label = " (Coming soon!)" if page_type == "coming_soon" else ""
 
     # Build subway section (NYC only)
     subway_sec = ""
