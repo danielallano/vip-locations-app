@@ -8,7 +8,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, FileResponse, StreamingResponse
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict
+from contextvars import ContextVar
 import os
 import json
 import re
@@ -20,7 +21,22 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from templates.brands import BRANDS, get_brand, list_brands
 
-app = FastAPI(title="VIP Location Content Generator", version="2.0.0")
+app = FastAPI(title="VIP Location Content Generator", version="3.0.0")
+
+# ── Content-length context var (async-safe) ───────────────────────────────────
+_content_length_var: ContextVar[str] = ContextVar('content_length', default='standard')
+
+
+def _apply_length_settings(prompt: str, max_tokens: int) -> tuple:
+    """Adjust prompt and max_tokens based on current content_length setting."""
+    cl = _content_length_var.get()
+    if cl == 'concise':
+        prompt += "\n\nCONTENT LENGTH REQUIREMENT: Be concise. Keep paragraphs to 2-3 short sentences. Use fewer words overall."
+        max_tokens = max(200, int(max_tokens * 0.65))
+    elif cl == 'detailed':
+        prompt += "\n\nCONTENT LENGTH REQUIREMENT: Write detailed, SEO-rich content. Use 5-7 sentence paragraphs. Include more local context, landmarks, keywords, and compelling patient-centric details."
+        max_tokens = int(max_tokens * 1.5)
+    return prompt, max_tokens
 
 # OpenAI client
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
@@ -38,6 +54,8 @@ class GenerateRequest(BaseModel):
     doctor_name: Optional[str] = None
     doctor_pronouns: Optional[str] = None  # "he" | "she" | "they"
     clinic_type: Optional[str] = "vein"  # "vein" | "vein_pain"
+    content_length: Optional[str] = "standard"  # "concise" | "standard" | "detailed"
+    doctor_overrides: Optional[Dict[str, Dict[str, str]]] = None  # {brand_id: {name, pronouns}}
 
 
 class BrandContent(BaseModel):
@@ -59,6 +77,18 @@ class ExportRequest(BaseModel):
     results: List[BrandContent]
     format: str  # "txt" | "doc" | "html" | "json" | "csv"
     brand_id: Optional[str] = "all"
+
+
+class RegenerateSectionRequest(BaseModel):
+    brand_id: str
+    address: str
+    page_type: str
+    section_index: int
+    section_title: str
+    doctor_name: Optional[str] = None
+    doctor_pronouns: Optional[str] = None
+    content_length: Optional[str] = "standard"
+    clinic_type: Optional[str] = "vein"
 
 
 # ── Content rules (shared across all AI prompts) ─────────────────────────────
@@ -111,12 +141,13 @@ Return a JSON object with these fields:
 Only return valid JSON, no markdown, no extra text.
 """
 
+    prompt, _max_tokens = _apply_length_settings(prompt, 600)
     try:
         resp = oai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.4,
-            max_tokens=600,
+            max_tokens=_max_tokens,
         )
         raw = resp.choices[0].message.content.strip()
         raw = re.sub(r'^```json\s*', '', raw)
@@ -199,12 +230,13 @@ Return a JSON object with:
 {CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
+    prompt, _max_tokens = _apply_length_settings(prompt, 600)
     try:
         resp = oai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.5,
-            max_tokens=600,
+            max_tokens=_max_tokens,
         )
         raw = resp.choices[0].message.content.strip()
         raw = re.sub(r'^```json\s*', '', raw)
@@ -303,12 +335,13 @@ Return a JSON object with:
 {CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
+    prompt, _max_tokens = _apply_length_settings(prompt, 700)
     try:
         resp = oai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.6,
-            max_tokens=700,
+            max_tokens=_max_tokens,
         )
         raw = resp.choices[0].message.content.strip()
         raw = re.sub(r'^```json\s*', '', raw)
@@ -399,12 +432,13 @@ Return a JSON object with:
 {CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
+    prompt, _max_tokens = _apply_length_settings(prompt, 700)
     try:
         resp = oai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.5,
-            max_tokens=700,
+            max_tokens=_max_tokens,
         )
         raw = resp.choices[0].message.content.strip()
         raw = re.sub(r'^```json\s*', '', raw)
@@ -503,12 +537,13 @@ IMPORTANT: Use the correct pronouns ({p['subject']}/{p['object']}/{p['possessive
 {CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
+    prompt, _max_tokens = _apply_length_settings(prompt, 700)
     try:
         resp = oai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.5,
-            max_tokens=700,
+            max_tokens=_max_tokens,
         )
         raw = resp.choices[0].message.content.strip()
         raw = re.sub(r'^```json\s*', '', raw)
@@ -596,12 +631,13 @@ Generate a JSON object with:
 
 Return ONLY valid JSON. No markdown, no extra text."""
 
+    prompt, _max_tokens = _apply_length_settings(prompt, 500)
     try:
         resp = oai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.6,
-            max_tokens=500,
+            max_tokens=_max_tokens,
         )
         raw = resp.choices[0].message.content.strip()
         raw = re.sub(r'^```json\s*', '', raw)
@@ -683,12 +719,13 @@ Return a JSON object with:
 {CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
+    prompt, _max_tokens = _apply_length_settings(prompt, 700)
     try:
         resp = oai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.6,
-            max_tokens=700,
+            max_tokens=_max_tokens,
         )
         raw = resp.choices[0].message.content.strip()
         raw = re.sub(r'^```json\s*', '', raw)
@@ -968,12 +1005,13 @@ Return a JSON object with:
 {CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
+    prompt, _max_tokens = _apply_length_settings(prompt, 700)
     try:
         resp = oai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.5,
-            max_tokens=700,
+            max_tokens=_max_tokens,
         )
         raw = resp.choices[0].message.content.strip()
         raw = re.sub(r'^```json\s*', '', raw)
@@ -1080,12 +1118,13 @@ Return a JSON object with:
 {CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
+    prompt, _max_tokens = _apply_length_settings(prompt, 1500)
     try:
         resp = oai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.5,
-            max_tokens=1500,
+            max_tokens=_max_tokens,
         )
         raw = resp.choices[0].message.content.strip()
         raw = re.sub(r'^```json\s*', '', raw)
@@ -1234,12 +1273,13 @@ Return a JSON object with:
 {CONTENT_RULES}
 Return ONLY valid JSON. No markdown."""
 
+    prompt, _max_tokens = _apply_length_settings(prompt, 2500)
     try:
         resp = oai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.5,
-            max_tokens=2500,
+            max_tokens=_max_tokens,
         )
         raw = resp.choices[0].message.content.strip()
         raw = re.sub(r'^```json\s*', '', raw)
@@ -1471,11 +1511,19 @@ def build_content_regional(brand: dict, address: str, page_type: str, ctx: dict,
     return content, meta_title, meta_desc
 
 
-def generate_content_for_brand(brand_id: str, address: str, page_type: str, doctor_name: Optional[str] = None, clinic_type: Optional[str] = "vein", doctor_pronouns: Optional[str] = None) -> BrandContent:
+def generate_content_for_brand(brand_id: str, address: str, page_type: str, doctor_name: Optional[str] = None, clinic_type: Optional[str] = "vein", doctor_pronouns: Optional[str] = None, doctor_overrides: Optional[Dict[str, Dict[str, str]]] = None) -> BrandContent:
     """Generate content for a single brand."""
     brand = get_brand(brand_id)
     if not brand:
         raise ValueError(f"Unknown brand: {brand_id}")
+
+    # Apply per-brand doctor overrides
+    if doctor_overrides and brand_id in doctor_overrides:
+        override = doctor_overrides[brand_id]
+        if override.get('name'):
+            doctor_name = override['name']
+        if override.get('pronouns'):
+            doctor_pronouns = override['pronouns']
 
     # Override brand specialty based on clinic_type selection
     if clinic_type == "vein_pain" and brand.get("specialty") in ("vein", "vein_pain"):
@@ -1728,9 +1776,10 @@ def api_generate(req: GenerateRequest):
     results = []
     errors = []
 
+    _content_length_var.set(req.content_length or 'standard')
     for brand_id in req.brand_ids:
         try:
-            result = generate_content_for_brand(brand_id, req.address, req.page_type, req.doctor_name, req.clinic_type, req.doctor_pronouns)
+            result = generate_content_for_brand(brand_id, req.address, req.page_type, req.doctor_name, req.clinic_type, req.doctor_pronouns, req.doctor_overrides)
             results.append(result)
         except Exception as e:
             errors.append(f"{brand_id}: {str(e)}")
@@ -1743,6 +1792,96 @@ def api_generate(req: GenerateRequest):
         page_type=req.page_type,
         results=results,
     )
+
+
+@app.post("/api/regenerate-section")
+def api_regenerate_section(req: RegenerateSectionRequest):
+    """Regenerate a single section of content for a brand."""
+    _content_length_var.set(req.content_length or 'standard')
+    try:
+        brand = get_brand(req.brand_id)
+        if not brand:
+            raise HTTPException(status_code=400, detail=f"Unknown brand: {req.brand_id}")
+
+        language = brand.get('language', 'en')
+        ctx = get_location_context(req.address, brand, req.page_type, language)
+        hood = ctx['neighborhood_name']
+        city = ctx['city']
+        state = ctx['state']
+        city_state = ctx['city_state']
+
+        section_title_clean = req.section_title.lstrip('#').strip()
+        lang_instruction = "Respond in Spanish." if language == 'es' else "Respond in English."
+
+        prompt = f"""You are a medical marketing copywriter regenerating a single section of a location page.
+
+Brand: {brand['name']} ({brand['domain']})
+Location: {req.address} — {hood}, {city}, {state}
+Page type: {"Coming soon" if req.page_type == 'coming_soon' else 'Open location'}
+Section to regenerate: "{section_title_clean}"
+Section index: {req.section_index}
+{'Doctor: ' + req.doctor_name if req.doctor_name else ''}
+{lang_instruction}
+
+Write ONLY the content for this section (heading + body). Use markdown format:
+- Start with ## {section_title_clean} (the heading)
+- Write 2-5 sentences or bullet points of fresh, unique content
+- Make it location-specific and SEO-optimized
+- Do NOT include any other sections or meta tags
+
+{CONTENT_RULES}"""
+
+        prompt, max_tokens = _apply_length_settings(prompt, 400)
+        resp = oai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+            max_tokens=max_tokens,
+        )
+        new_section = resp.choices[0].message.content.strip()
+        return {"section": new_section, "section_index": req.section_index}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/brand-templates")
+def api_brand_templates():
+    """Return template descriptions for all brands."""
+    templates = {}
+    for b in BRANDS.values():
+        bid = b['id']
+        if bid == 'vtc':
+            desc = "VTC style: H1 location title + address + phone + 'Premier vein treatment clinic' section + AI directions + subway/landmarks (NYC). SEO meta included."
+        elif bid == 'veintreatment':
+            desc = "veintreatment.com style: H1 neighborhood + address + one long SEO paragraph with rich keywords (spider veins, CVI, duplex ultrasound)."
+        elif bid == 'vip':
+            desc = "VIP Medical Group style: H1 neighborhood + address + short intro paragraph + detailed directions + subway (NYC) + landmarks."
+        elif bid == 'pts':
+            desc = "Pain Treatment Specialists: 'Meet our [City] Team' section with 3 doctor paragraphs. REQUIRES doctor name + pronouns."
+        elif bid == 'venasvarices':
+            desc = "Venas Varices (Spanish): H1 neighborhood + address + Spanish SEO paragraph with keywords 'arañitas', 'venas varicosas'."
+        elif bid == 'veindoctor':
+            desc = "veindoctor.com: 'Find a Vein Doctor' angle — H1 + address + long SEO paragraph focused on doctor credentials."
+        elif bid == 'legulcercenter':
+            desc = "Leg Ulcer Center: Full template with intro, top-rated experts, quality treatments, insurance section, neighborhoods, location, FAQ."
+        elif b.get('group') == 'Vein Clinics':
+            desc = f"Vein Clinics ({b.get('region', b['id'])}): '5 Reasons We\'re the Best' + Treatment Journey + Directions from neighborhoods."
+        elif b.get('group') == 'Vein Centers':
+            desc = f"Vein Centers ({b.get('region', b['id'])}): Spider & Varicose Vein Center intro (4 paragraphs) + Treatment options + 8 Reasons + Meet Doctors + Directions."
+        elif b.get('type') == 'regional' and 'veintreatment' in bid:
+            desc = f"{b['name']}: Regional veintreatment style — Location header + 'Why Choose' section with 3 paragraphs on symptoms, consultation, and CTA."
+        else:
+            desc = f"{b['name']}: Standard regional template — Location header, neighborhoods, directions, services, conditions, trust points."
+        templates[bid] = {
+            'brand_name': b['name'],
+            'domain': b['domain'],
+            'description': desc,
+            'requires_doctor': bid == 'pts',
+            'language': b.get('language', 'en'),
+        }
+    return templates
 
 
 @app.post("/api/export")

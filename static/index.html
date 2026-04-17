@@ -13,134 +13,74 @@
       --vip-light: #f0f7ff;
       --vip-border: #d0e5f5;
     }
-
-    body {
-      background-color: #f5f7fa;
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      color: #222;
-    }
-
-    .top-bar {
-      background: var(--vip-blue);
-      padding: 12px 0;
-      color: #fff;
-    }
+    body { background-color: #f5f7fa; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; color: #222; }
+    .top-bar { background: var(--vip-blue); padding: 12px 0; color: #fff; }
     .top-bar h1 { font-size: 1.15rem; font-weight: 600; margin: 0; }
     .top-bar p { font-size: 0.78rem; margin: 0; opacity: 0.75; }
-
     .card { border: 1px solid var(--vip-border); border-radius: 12px; }
-    .card-header {
-      background: var(--vip-light);
-      border-bottom: 1px solid var(--vip-border);
-      border-radius: 12px 12px 0 0 !important;
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-
+    .card-header { background: var(--vip-light); border-bottom: 1px solid var(--vip-border); border-radius: 12px 12px 0 0 !important; font-weight: 600; font-size: 0.95rem; }
     .brand-check { cursor: pointer; }
     .brand-check input[type="checkbox"] { cursor: pointer; }
-
-    .btn-generate {
-      background: var(--vip-blue);
-      color: #fff;
-      font-weight: 600;
-      padding: 10px 28px;
-      border: none;
-      border-radius: 8px;
-    }
+    .btn-generate { background: var(--vip-blue); color: #fff; font-weight: 600; padding: 10px 28px; border: none; border-radius: 8px; }
     .btn-generate:hover { background: #0c4f7d; color: #fff; }
     .btn-generate:disabled { background: #6c8a9d; }
-
-    .brand-badge {
-      font-size: 0.68rem;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 20px;
-      background: var(--vip-blue);
-      color: #fff;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
+    .brand-badge { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: var(--vip-blue); color: #fff; text-transform: uppercase; letter-spacing: 0.4px; }
     .brand-badge.regional { background: #5c6bc0; }
     .brand-badge.microsite { background: #00897b; }
     .brand-badge.spanish { background: #e65100; }
     .brand-badge.other { background: #757575; }
-
-    .content-area {
-      font-family: 'Courier New', monospace;
-      font-size: 0.82rem;
-      line-height: 1.65;
-      white-space: pre-wrap;
-      background: #fafafa;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 16px;
-      max-height: 500px;
-      overflow-y: auto;
-    }
-
-    .meta-box {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 8px;
-      padding: 14px 16px;
-      font-size: 0.85rem;
-    }
+    .content-area { font-family: 'Courier New', monospace; font-size: 0.82rem; line-height: 1.65; white-space: pre-wrap; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; max-height: 500px; overflow-y: auto; }
+    .content-textarea { font-family: 'Courier New', monospace; font-size: 0.82rem; line-height: 1.65; background: #fffef5; border: 2px solid var(--vip-teal); border-radius: 8px; padding: 16px; width: 100%; min-height: 400px; max-height: 600px; resize: vertical; }
+    .preview-area { font-size: 0.9rem; line-height: 1.7; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; max-height: 500px; overflow-y: auto; }
+    .preview-area h1 { font-size: 1.5rem; color: var(--vip-blue); border-bottom: 2px solid var(--vip-border); padding-bottom: 8px; margin-bottom: 12px; }
+    .preview-area h2 { font-size: 1.2rem; color: var(--vip-teal); margin-top: 20px; margin-bottom: 8px; }
+    .preview-area h3 { font-size: 1.05rem; color: #333; margin-top: 16px; }
+    .preview-area ul, .preview-area ol { padding-left: 1.5rem; }
+    .preview-area hr { border-color: var(--vip-border); margin: 16px 0; }
+    .preview-area p { margin-bottom: 0.6rem; }
+    .meta-box { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 14px 16px; font-size: 0.85rem; }
     .meta-box strong { color: #6d4c00; }
-
     .copy-btn { font-size: 0.8rem; padding: 5px 14px; border-radius: 6px; }
-
     .type-toggle .btn-check:checked + .btn { font-weight: 700; }
-
     .spinner-border-sm { width: 1rem; height: 1rem; }
     #statusBar { font-size: 0.85rem; }
-
     .select-all-link { font-size: 0.8rem; cursor: pointer; color: var(--vip-teal); }
     .select-all-link:hover { text-decoration: underline; }
-
-    .brand-group-label {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: #888;
-      font-weight: 700;
-      padding: 8px 0 4px;
-      border-top: 1px solid #eee;
-      margin-top: 8px;
-    }
+    .brand-group-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.8px; color: #888; font-weight: 700; padding: 8px 0 4px; border-top: 1px solid #eee; margin-top: 8px; }
     .brand-group-label:first-child { border-top: none; margin-top: 0; padding-top: 0; }
-
-    /* Tabs */
-    .result-tabs .nav-link {
-      font-size: 0.82rem;
-      padding: 8px 16px;
-      color: #555;
-      border: 1px solid transparent;
-    }
-    .result-tabs .nav-link.active {
-      background: var(--vip-light);
-      border-color: var(--vip-border) var(--vip-border) #fff;
-      color: var(--vip-blue);
-      font-weight: 600;
-    }
-    .result-tabs .nav-link .tab-domain {
-      display: block;
-      font-size: 0.65rem;
-      color: #999;
-      font-weight: 400;
-    }
+    .result-tabs .nav-link { font-size: 0.82rem; padding: 8px 16px; color: #555; border: 1px solid transparent; }
+    .result-tabs .nav-link.active { background: var(--vip-light); border-color: var(--vip-border) var(--vip-border) #fff; color: var(--vip-blue); font-weight: 600; }
+    .result-tabs .nav-link .tab-domain { display: block; font-size: 0.65rem; color: #999; font-weight: 400; }
     .tab-content { border: 1px solid var(--vip-border); border-top: none; border-radius: 0 0 12px 12px; background: #fff; }
     .tab-pane { padding: 20px; }
-
     .download-dropdown .dropdown-menu { font-size: 0.85rem; }
-
-    .brand-count-badge {
-      font-size: 0.7rem;
-      background: var(--vip-teal);
-      color: #fff;
-      padding: 2px 8px;
-      border-radius: 10px;
-    }
+    .brand-count-badge { font-size: 0.7rem; background: var(--vip-teal); color: #fff; padding: 2px 8px; border-radius: 10px; }
+    /* Section refresh buttons */
+    .section-refresh-btn { font-size: 0.72rem; padding: 2px 7px; border-radius: 5px; border: 1px solid #ccc; background: #fff; cursor: pointer; color: #555; margin-left: 6px; vertical-align: middle; }
+    .section-refresh-btn:hover { background: var(--vip-light); border-color: var(--vip-teal); color: var(--vip-teal); }
+    /* View mode tabs (view/edit/preview) */
+    .view-mode-btn { font-size: 0.75rem; padding: 4px 11px; }
+    /* Saved Locations */
+    #savedLocationsBar { background: var(--vip-light); border: 1px solid var(--vip-border); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; }
+    /* Batch mode */
+    #batchModeBar { background: #f8f0ff; border: 1px solid #c9b3e8; border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+    /* History modal */
+    .history-item { cursor: pointer; border-bottom: 1px solid #eee; padding: 8px 12px; font-size: 0.85rem; }
+    .history-item:hover { background: var(--vip-light); }
+    /* Doctor overrides section */
+    #doctorOverridesSection { background: #f0fff4; border: 1px solid #b2dfdb; border-radius: 8px; padding: 12px; margin-top: 8px; }
+    /* Template preview */
+    #templatePreviewSection .template-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; font-size: 0.8rem; }
+    #templatePreviewSection .template-card .brand-name { font-weight: 600; color: var(--vip-blue); }
+    /* Compare */
+    #compareSection .diff-added { background: #e6ffed; }
+    #compareSection .diff-removed { background: #ffeef0; }
+    #compareSection .diff-line { font-family: monospace; font-size: 0.78rem; white-space: pre-wrap; padding: 1px 4px; }
+    /* Batch nested tabs */
+    .batch-addr-tab .nav-link { font-size: 0.75rem; padding: 5px 12px; }
+    .batch-inner-tab .nav-link { font-size: 0.72rem; padding: 4px 10px; }
+    /* Top bar extras */
+    .top-bar-extras { display: flex; gap: 8px; align-items: center; }
   </style>
 </head>
 <body>
@@ -148,10 +88,14 @@
 <!-- Top bar -->
 <div class="top-bar">
   <div class="container-fluid px-4">
-    <div class="d-flex align-items-center gap-3">
+    <div class="d-flex align-items-center justify-content-between">
       <div>
         <h1>📍 Location Content Generator</h1>
         <p>VIP Medical Group — Multi-brand SEO content tool</p>
+      </div>
+      <div class="top-bar-extras">
+        <button class="btn btn-sm btn-outline-light" onclick="openHistoryModal()"><i class="bi bi-clock-history me-1"></i>History</button>
+        <button class="btn btn-sm btn-outline-light" id="batchModeToggleBtn" onclick="toggleBatchMode()"><i class="bi bi-table me-1"></i>Batch Mode</button>
       </div>
     </div>
   </div>
@@ -167,6 +111,28 @@
           <i class="bi bi-building"></i> Generate Content
         </div>
         <div class="card-body">
+
+          <!-- Saved Locations -->
+          <div id="savedLocationsBar">
+            <div class="d-flex align-items-center gap-2">
+              <label class="form-label mb-0 fw-semibold" style="font-size:0.82rem; white-space:nowrap;">📁 Saved Locations</label>
+              <select id="savedLocationsSelect" class="form-select form-select-sm" onchange="loadSavedLocation(this.value)">
+                <option value="">— Select saved location —</option>
+              </select>
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteSavedLocation()" title="Delete selected"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>
+
+          <!-- Batch Mode Bar (hidden by default) -->
+          <div id="batchModeBar" style="display:none;">
+            <div class="fw-semibold mb-2" style="font-size:0.85rem;"><i class="bi bi-table me-1"></i>Batch Mode — CSV Input</div>
+            <div class="form-text mb-1">Format: address, doctor_name, pronouns, page_type (one row per line)</div>
+            <textarea id="batchCsvInput" class="form-control form-control-sm" rows="5" placeholder="123 Main St, Houston TX 77001, Dr. Smith, he, open&#10;456 Elm Ave, Dallas TX 75001,,, coming_soon"></textarea>
+            <div class="mt-2 d-flex gap-2">
+              <button class="btn btn-sm btn-generate" onclick="generateBatch()"><i class="bi bi-magic"></i> Generate Batch</button>
+              <button class="btn btn-sm btn-outline-secondary" onclick="downloadBatchAll()"><i class="bi bi-download"></i> Download All</button>
+            </div>
+          </div>
 
           <!-- Address -->
           <div class="mb-3">
@@ -194,7 +160,6 @@
               <option value="she">She / Her / Her</option>
               <option value="they">They / Them / Their</option>
             </select>
-            <div class="form-text">Used for PTS "Meet our Team" content</div>
           </div>
 
           <!-- Page type -->
@@ -215,9 +180,18 @@
               <input type="radio" class="btn-check" name="clinicType" id="clinicVein" value="vein" checked />
               <label class="btn btn-outline-info" for="clinicVein">🩸 Vein Only</label>
               <input type="radio" class="btn-check" name="clinicType" id="clinicVeinPain" value="vein_pain" />
-              <label class="btn btn-outline-info" for="clinicVeinPain">🩸💊 Vein & Pain</label>
+              <label class="btn btn-outline-info" for="clinicVeinPain">🩸💊 Vein &amp; Pain</label>
             </div>
-            <div class="form-text">Affects keyword selection for VIP and multi-specialty brands</div>
+          </div>
+
+          <!-- Content Length -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">📏 Content Length</label>
+            <select id="contentLengthSelect" class="form-select form-select-sm">
+              <option value="concise">Concise — shorter, fewer sentences</option>
+              <option value="standard" selected>Standard — balanced content</option>
+              <option value="detailed">Detailed — longer, SEO-rich</option>
+            </select>
           </div>
 
           <!-- Brand selection -->
@@ -232,14 +206,52 @@
                 <span class="select-all-link" onclick="autoDetectState()">Auto-detect</span>
               </div>
             </div>
-            <div id="brandList" class="border rounded p-3" style="background:#fafafa; max-height: 400px; overflow-y: auto;">
+            <div id="brandList" class="border rounded p-3" style="background:#fafafa; max-height: 320px; overflow-y: auto;">
               <div class="text-muted small">Loading brands...</div>
+            </div>
+          </div>
+
+          <!-- Doctor Overrides (shown when brands need doctors) -->
+          <div id="doctorOverridesWrapper" style="display:none;" class="mb-3">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <label class="form-label fw-semibold mb-0">🩺 Doctor Assignments</label>
+              <button class="btn btn-sm btn-link p-0" style="font-size:0.75rem;" type="button"
+                data-bs-toggle="collapse" data-bs-target="#doctorOverridesSection">
+                Toggle ▾
+              </button>
+            </div>
+            <div class="collapse" id="doctorOverridesSection">
+              <div class="p-2 rounded" style="background:#f0fff4; border:1px solid #b2dfdb;">
+                <div class="form-text mb-2">Override doctor per brand. Leave blank to use main doctor above.</div>
+                <div id="doctorOverrideFields"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Template Preview -->
+          <div class="mb-3">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <label class="form-label fw-semibold mb-0">📋 Template Preview</label>
+              <button class="btn btn-sm btn-link p-0" style="font-size:0.75rem;" type="button"
+                data-bs-toggle="collapse" data-bs-target="#templatePreviewSection">
+                Show ▾
+              </button>
+            </div>
+            <div class="collapse" id="templatePreviewSection">
+              <div id="templatePreviewContent" class="p-2 rounded" style="background:#fff; border:1px solid #ddd; max-height:200px; overflow-y:auto; font-size:0.78rem;">
+                <span class="text-muted">Select brands to see template descriptions.</span>
+              </div>
             </div>
           </div>
 
           <!-- Generate button -->
           <button class="btn btn-generate w-100" id="generateBtn" onclick="generateContent()">
             <i class="bi bi-magic"></i> Generate Content
+          </button>
+
+          <!-- Save location button (shown after generation) -->
+          <button class="btn btn-sm btn-outline-success w-100 mt-2" id="saveLocationBtn" style="display:none;" onclick="saveCurrentLocation()">
+            <i class="bi bi-bookmark-plus"></i> Save This Location
           </button>
 
           <!-- Status -->
@@ -263,12 +275,60 @@
   </div>
 </div>
 
+<!-- History Modal -->
+<div class="modal fade" id="historyModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-clock-history me-2"></i>Generation History</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div id="historyList" style="max-height: 500px; overflow-y: auto;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-sm btn-outline-danger" onclick="clearHistory()"><i class="bi bi-trash me-1"></i>Clear History</button>
+        <button class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Compare Modal -->
+<div class="modal fade" id="compareModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-layout-split me-2"></i>Side-by-Side Comparison</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="fw-semibold mb-2 text-primary">Generated Content</div>
+            <div id="compareLeft" class="content-area" style="max-height: 500px;"></div>
+          </div>
+          <div class="col-6">
+            <div class="fw-semibold mb-2 d-flex align-items-center gap-2">
+              <span>Existing Content</span>
+              <input type="url" id="compareUrlInput" class="form-control form-control-sm" placeholder="https://example.com/page" style="max-width:260px;" />
+              <button class="btn btn-sm btn-outline-primary" onclick="fetchCompareUrl()">Fetch</button>
+            </div>
+            <textarea id="compareRight" class="content-textarea" style="min-height:200px; max-height:300px;" placeholder="Paste existing page content here, or fetch from URL above..."></textarea>
+            <div id="diffOutput" class="mt-2" style="max-height:200px; overflow-y:auto;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// ── Base URL (handles reverse proxy path prefix) ──────────────────────────────
+// ── Base URL ───────────────────────────────────────────────────────────────────
 const BASE_URL = window.location.pathname.endsWith('/') ? window.location.pathname : window.location.pathname + '/';
 
-// ── State → brand mapping for auto-detect ─────────────────────────────────────
+// ── State / Brand mappings ─────────────────────────────────────────────────────
 const STATE_BRAND_MAP = {
   'TX': ['veintreatmenttx', 'veincenterstx'],
   'CA': ['veintreatmentca', 'veincentersca', 'veinclinicsca', 'veintreatmentsd'],
@@ -279,23 +339,19 @@ const STATE_BRAND_MAP = {
   'PA': ['paveincenters', 'paveinclinics'],
 };
 const NATIONAL_BRANDS = ['vip', 'vtc', 'veintreatment', 'veindoctor', 'venasvarices'];
-
-// State name to abbreviation
 const STATE_NAMES = {
   'texas': 'TX', 'california': 'CA', 'new york': 'NY', 'new jersey': 'NJ',
   'maryland': 'MD', 'connecticut': 'CT', 'pennsylvania': 'PA',
   'long island': 'NY', 'san diego': 'CA', 'houston': 'TX', 'manhattan': 'NY',
   'brooklyn': 'NY', 'queens': 'NY', 'bronx': 'NY', 'staten island': 'NY',
 };
-
-// Group order for rendering
-const GROUP_ORDER = [
-  'VIP Medical Group', 'VTC', 'PTS',
-  'Vein Treatment', 'Vein Centers', 'Vein Clinics', 'Other'
-];
+const GROUP_ORDER = ['VIP Medical Group', 'VTC', 'PTS', 'Vein Treatment', 'Vein Centers', 'Vein Clinics', 'Other'];
 
 let brands = [];
-let lastResults = null;  // Store for export
+let lastResults = null;   // [{brand_id, brand_name, domain, content, meta_title, meta_description}]
+let brandTemplates = {};  // cached from /api/brand-templates
+let batchMode = false;
+let batchResults = [];    // [{address, results}]
 
 // ── Brand loader ──────────────────────────────────────────────────────────────
 async function loadBrands() {
@@ -304,6 +360,9 @@ async function loadBrands() {
     brands = await resp.json();
     renderBrandList();
     updateBrandCount();
+    loadSavedLocationsDropdown();
+    // Fetch templates in background
+    fetch(BASE_URL + 'api/brand-templates').then(r => r.json()).then(t => { brandTemplates = t; });
   } catch (e) {
     document.getElementById('brandList').innerHTML = '<div class="text-danger small">Failed to load brands.</div>';
   }
@@ -313,13 +372,10 @@ function renderBrandList() {
   const container = document.getElementById('brandList');
   const groups = {};
   for (const g of GROUP_ORDER) groups[g] = [];
-
   for (const b of brands) {
-    const g = groups[b.group] || (groups['Other'] = groups['Other'] || []);
     if (groups[b.group]) groups[b.group].push(b);
     else groups['Other'].push(b);
   }
-
   let html = '';
   for (const gName of GROUP_ORDER) {
     const items = groups[gName];
@@ -327,11 +383,10 @@ function renderBrandList() {
     html += `<div class="brand-group-label">${escHtml(gName)} (${items.length})</div>`;
     for (const b of items) {
       const isSpanish = b.language === 'es';
-      const typeClass = b.type === 'regional' ? 'regional' : b.type === 'microsite' ? (isSpanish ? 'spanish' : 'microsite') : b.type === 'other' ? 'other' : '';
       html += `
         <div class="form-check brand-check py-1">
           <input class="form-check-input brand-checkbox" type="checkbox" value="${b.id}" id="brand_${b.id}"
-            onchange="updateBrandCount()" checked />
+            onchange="updateBrandCount(); updateDoctorOverrides(); updateTemplatePreview();" checked />
           <label class="form-check-label d-flex align-items-center gap-2" for="brand_${b.id}">
             <span>${escHtml(b.name)}</span>
             ${isSpanish ? '<span class="brand-badge spanish">ES</span>' : ''}
@@ -350,25 +405,20 @@ function updateBrandCount() {
 
 function selectAll() {
   document.querySelectorAll('.brand-checkbox').forEach(cb => cb.checked = true);
-  updateBrandCount();
+  updateBrandCount(); updateDoctorOverrides(); updateTemplatePreview();
 }
 function selectNone() {
   document.querySelectorAll('.brand-checkbox').forEach(cb => cb.checked = false);
-  updateBrandCount();
+  updateBrandCount(); updateDoctorOverrides(); updateTemplatePreview();
 }
 
 function detectStateFromAddress(addr) {
   const upper = addr.toUpperCase();
   const lower = addr.toLowerCase();
-
-  // Try 2-letter state abbreviation
   for (const st of Object.keys(STATE_BRAND_MAP)) {
-    // Match ", ST " or ", ST," or ", ST 0-9" (zip)
     const re = new RegExp('[,\\s]' + st + '(?:[\\s,]|\\d|$)', 'i');
     if (re.test(upper)) return st;
   }
-
-  // Try full state names
   for (const [name, abbr] of Object.entries(STATE_NAMES)) {
     if (lower.includes(name)) return abbr;
   }
@@ -377,34 +427,16 @@ function detectStateFromAddress(addr) {
 
 function autoDetectState() {
   const addr = document.getElementById('addressInput').value.trim();
-  if (!addr) {
-    alert('Enter an address first, then click Auto-detect.');
-    return;
-  }
-
+  if (!addr) { alert('Enter an address first, then click Auto-detect.'); return; }
   const state = detectStateFromAddress(addr);
-
-  // Uncheck all first
   document.querySelectorAll('.brand-checkbox').forEach(cb => cb.checked = false);
-
-  // Check national brands
-  for (const id of NATIONAL_BRANDS) {
-    const cb = document.getElementById('brand_' + id);
-    if (cb) cb.checked = true;
-  }
-
-  // Check state-specific brands
+  for (const id of NATIONAL_BRANDS) { const cb = document.getElementById('brand_' + id); if (cb) cb.checked = true; }
   if (state && STATE_BRAND_MAP[state]) {
-    for (const id of STATE_BRAND_MAP[state]) {
-      const cb = document.getElementById('brand_' + id);
-      if (cb) cb.checked = true;
-    }
+    for (const id of STATE_BRAND_MAP[state]) { const cb = document.getElementById('brand_' + id); if (cb) cb.checked = true; }
   }
-
-  updateBrandCount();
+  updateBrandCount(); updateDoctorOverrides(); updateTemplatePreview();
 }
 
-// Auto-detect on address blur
 document.addEventListener('DOMContentLoaded', () => {
   const addrInput = document.getElementById('addressInput');
   addrInput.addEventListener('blur', () => {
@@ -412,6 +444,199 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// ── Feature 5: Template Preview ───────────────────────────────────────────────
+function updateTemplatePreview() {
+  const selected = [...document.querySelectorAll('.brand-checkbox:checked')].map(cb => cb.value);
+  const container = document.getElementById('templatePreviewContent');
+  if (!selected.length || !Object.keys(brandTemplates).length) {
+    container.innerHTML = '<span class="text-muted">Select brands to see template descriptions.</span>';
+    return;
+  }
+  let html = '';
+  for (const bid of selected) {
+    const t = brandTemplates[bid];
+    if (!t) continue;
+    const reqDr = t.requires_doctor ? ' <span class="badge bg-warning text-dark" style="font-size:0.65rem;">Needs Doctor</span>' : '';
+    const lang = t.language === 'es' ? ' <span class="badge bg-danger" style="font-size:0.65rem;">ES</span>' : '';
+    html += `<div class="mb-1 p-2 rounded" style="background:#fff;border:1px solid #eee;">
+      <div style="font-size:0.78rem;"><strong>${escHtml(t.brand_name)}</strong>${reqDr}${lang} <span class="text-muted">${escHtml(t.domain)}</span></div>
+      <div style="font-size:0.75rem;color:#555;">${escHtml(t.description)}</div>
+    </div>`;
+  }
+  container.innerHTML = html || '<span class="text-muted">No templates found.</span>';
+}
+
+// ── Feature 6: Doctor Overrides ───────────────────────────────────────────────
+function updateDoctorOverrides() {
+  const selected = [...document.querySelectorAll('.brand-checkbox:checked')].map(cb => cb.value);
+  const wrapper = document.getElementById('doctorOverridesWrapper');
+  const fields = document.getElementById('doctorOverrideFields');
+
+  // Show for PTS and any brand that might need a doctor
+  const ptsBrands = selected.filter(id => id === 'pts');
+  if (!ptsBrands.length) { wrapper.style.display = 'none'; return; }
+
+  wrapper.style.display = '';
+  let html = '';
+  for (const bid of ptsBrands) {
+    const brand = brands.find(b => b.id === bid);
+    if (!brand) continue;
+    html += `<div class="mb-2 p-2 rounded" style="background:#fff;border:1px solid #c8e6c9;">
+      <div class="fw-semibold mb-1" style="font-size:0.8rem;">${escHtml(brand.name)}</div>
+      <div class="row g-2">
+        <div class="col-7">
+          <input type="text" class="form-control form-control-sm dr-override-name" data-brand="${bid}"
+            placeholder="Override doctor name" />
+        </div>
+        <div class="col-5">
+          <select class="form-select form-select-sm dr-override-pronouns" data-brand="${bid}">
+            <option value="">Default pronouns</option>
+            <option value="he">He/Him</option>
+            <option value="she">She/Her</option>
+            <option value="they">They/Them</option>
+          </select>
+        </div>
+      </div>
+    </div>`;
+  }
+  fields.innerHTML = html;
+}
+
+function getDoctorOverrides() {
+  const overrides = {};
+  document.querySelectorAll('.dr-override-name').forEach(el => {
+    const bid = el.dataset.brand;
+    const name = el.value.trim();
+    const pronounsEl = document.querySelector(`.dr-override-pronouns[data-brand="${bid}"]`);
+    const pronouns = pronounsEl ? pronounsEl.value : '';
+    if (name || pronouns) {
+      overrides[bid] = {};
+      if (name) overrides[bid].name = name;
+      if (pronouns) overrides[bid].pronouns = pronouns;
+    }
+  });
+  return Object.keys(overrides).length ? overrides : null;
+}
+
+// ── Feature 7: Save/Load Locations ────────────────────────────────────────────
+function getSavedLocations() {
+  try { return JSON.parse(localStorage.getItem('vip_saved_locations') || '[]'); } catch { return []; }
+}
+function setSavedLocations(locs) {
+  localStorage.setItem('vip_saved_locations', JSON.stringify(locs));
+}
+function loadSavedLocationsDropdown() {
+  const sel = document.getElementById('savedLocationsSelect');
+  const locs = getSavedLocations();
+  sel.innerHTML = '<option value="">— Select saved location —</option>';
+  locs.forEach((loc, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${loc.address.substring(0, 45)} [${loc.pageType}]`;
+    sel.appendChild(opt);
+  });
+}
+function loadSavedLocation(index) {
+  if (index === '') return;
+  const locs = getSavedLocations();
+  const loc = locs[parseInt(index)];
+  if (!loc) return;
+  document.getElementById('addressInput').value = loc.address;
+  if (loc.doctorName) document.getElementById('doctorInput').value = loc.doctorName;
+  if (loc.pronouns) document.getElementById('pronounsInput').value = loc.pronouns;
+  if (loc.pageType) {
+    const rb = document.querySelector(`input[name="pageType"][value="${loc.pageType}"]`);
+    if (rb) rb.checked = true;
+  }
+  if (loc.clinicType) {
+    const rb = document.querySelector(`input[name="clinicType"][value="${loc.clinicType}"]`);
+    if (rb) rb.checked = true;
+  }
+  if (loc.contentLength) document.getElementById('contentLengthSelect').value = loc.contentLength;
+  // Brands
+  document.querySelectorAll('.brand-checkbox').forEach(cb => cb.checked = false);
+  if (loc.brandIds) loc.brandIds.forEach(id => { const cb = document.getElementById('brand_' + id); if (cb) cb.checked = true; });
+  updateBrandCount(); updateDoctorOverrides(); updateTemplatePreview();
+}
+function deleteSavedLocation() {
+  const sel = document.getElementById('savedLocationsSelect');
+  const idx = parseInt(sel.value);
+  if (isNaN(idx)) { alert('Select a saved location first.'); return; }
+  const locs = getSavedLocations();
+  locs.splice(idx, 1);
+  setSavedLocations(locs);
+  loadSavedLocationsDropdown();
+  sel.value = '';
+}
+function saveCurrentLocation() {
+  const address = document.getElementById('addressInput').value.trim();
+  if (!address) { alert('No address to save.'); return; }
+  const loc = {
+    address,
+    doctorName: document.getElementById('doctorInput').value.trim(),
+    pronouns: document.getElementById('pronounsInput').value,
+    pageType: document.querySelector('input[name="pageType"]:checked').value,
+    clinicType: document.querySelector('input[name="clinicType"]:checked').value,
+    contentLength: document.getElementById('contentLengthSelect').value,
+    brandIds: [...document.querySelectorAll('.brand-checkbox:checked')].map(cb => cb.value),
+    savedAt: new Date().toISOString(),
+  };
+  const locs = getSavedLocations();
+  // Check for duplicate
+  const dupIdx = locs.findIndex(l => l.address === address);
+  if (dupIdx >= 0) {
+    if (!confirm('A saved location with this address already exists. Overwrite?')) return;
+    locs[dupIdx] = loc;
+  } else {
+    locs.unshift(loc);
+    if (locs.length > 50) locs.pop();
+  }
+  setSavedLocations(locs);
+  loadSavedLocationsDropdown();
+  alert('Location saved!');
+}
+
+// ── Feature 10: History ───────────────────────────────────────────────────────
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem('vip_history') || '[]'); } catch { return []; }
+}
+function addToHistory(entry) {
+  const history = getHistory();
+  history.unshift(entry);
+  if (history.length > 100) history.pop();
+  localStorage.setItem('vip_history', JSON.stringify(history));
+}
+function openHistoryModal() {
+  const history = getHistory();
+  const list = document.getElementById('historyList');
+  if (!history.length) {
+    list.innerHTML = '<div class="p-4 text-muted text-center">No history yet.</div>';
+  } else {
+    list.innerHTML = history.map((h, i) => `
+      <div class="history-item d-flex align-items-center gap-3" onclick="loadHistoryEntry(${i})" data-bs-dismiss="modal">
+        <div class="flex-grow-1">
+          <div class="fw-semibold">${escHtml(h.address)}</div>
+          <div class="text-muted" style="font-size:0.75rem;">${escHtml(h.brands.join(', '))} — ${h.pageType} — ${new Date(h.timestamp).toLocaleString()}</div>
+        </div>
+        <div><span class="badge bg-secondary">${h.brands.length} brand${h.brands.length>1?'s':''}</span></div>
+      </div>`).join('');
+  }
+  new bootstrap.Modal(document.getElementById('historyModal')).show();
+}
+function loadHistoryEntry(index) {
+  const history = getHistory();
+  const entry = history[index];
+  if (!entry || !entry.results) return;
+  lastResults = entry.results;
+  renderResults({ address: entry.address, page_type: entry.pageType, results: entry.results });
+  document.getElementById('saveLocationBtn').style.display = '';
+  document.getElementById('statusBar').innerHTML = `<span class="text-info">📂 Loaded from history: ${escHtml(entry.address)}</span>`;
+}
+function clearHistory() {
+  if (!confirm('Clear all generation history?')) return;
+  localStorage.removeItem('vip_history');
+  document.getElementById('historyList').innerHTML = '<div class="p-4 text-muted text-center">History cleared.</div>';
+}
 
 // ── Generate ──────────────────────────────────────────────────────────────────
 async function generateContent() {
@@ -419,50 +644,49 @@ async function generateContent() {
   const pageType = document.querySelector('input[name="pageType"]:checked').value;
   const brandIds = [...document.querySelectorAll('.brand-checkbox:checked')].map(cb => cb.value);
   const doctorName = document.getElementById('doctorInput').value.trim() || null;
+  const doctorPronouns = document.getElementById('pronounsInput').value || null;
+  const clinicType = document.querySelector('input[name="clinicType"]:checked').value;
+  const contentLength = document.getElementById('contentLengthSelect').value;
+  const doctorOverrides = getDoctorOverrides();
 
-  if (!address) {
-    alert('Please enter a clinic address.');
-    document.getElementById('addressInput').focus();
-    return;
-  }
-  if (!brandIds.length) {
-    alert('Please select at least one brand.');
-    return;
-  }
+  if (!address) { alert('Please enter a clinic address.'); document.getElementById('addressInput').focus(); return; }
+  if (!brandIds.length) { alert('Please select at least one brand.'); return; }
 
   const btn = document.getElementById('generateBtn');
   const status = document.getElementById('statusBar');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
   status.innerHTML = `<span class="text-info">Calling GPT-4o-mini for ${brandIds.length} brand(s)... this may take 15–60s</span>`;
-
-  const resultsArea = document.getElementById('resultsArea');
-  resultsArea.innerHTML = '';
+  document.getElementById('resultsArea').innerHTML = '';
+  document.getElementById('saveLocationBtn').style.display = 'none';
 
   try {
-    const clinicType = document.querySelector('input[name="clinicType"]:checked').value;
-    const doctorPronouns = document.getElementById('pronounsInput').value || null;
-    const body = { address, brand_ids: brandIds, page_type: pageType, clinic_type: clinicType };
+    const body = { address, brand_ids: brandIds, page_type: pageType, clinic_type: clinicType, content_length: contentLength };
     if (doctorName) body.doctor_name = doctorName;
     if (doctorPronouns) body.doctor_pronouns = doctorPronouns;
+    if (doctorOverrides) body.doctor_overrides = doctorOverrides;
 
     const resp = await fetch(BASE_URL + 'api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
     });
-
-    if (!resp.ok) {
-      const err = await resp.json();
-      throw new Error(err.detail || 'Server error');
-    }
+    if (!resp.ok) { const err = await resp.json(); throw new Error(err.detail || 'Server error'); }
 
     const data = await resp.json();
     lastResults = data.results;
     renderResults(data);
     status.innerHTML = `<span class="text-success">✅ Generated content for ${data.results.length} brand(s)</span>`;
+    document.getElementById('saveLocationBtn').style.display = '';
+
+    // Add to history
+    addToHistory({
+      timestamp: new Date().toISOString(),
+      address: data.address,
+      pageType: data.page_type,
+      brands: data.results.map(r => r.brand_id),
+      results: data.results,
+    });
   } catch (e) {
-    resultsArea.innerHTML = `<div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>${e.message}</div>`;
+    document.getElementById('resultsArea').innerHTML = `<div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>${e.message}</div>`;
     status.innerHTML = '';
   } finally {
     btn.disabled = false;
@@ -470,19 +694,134 @@ async function generateContent() {
   }
 }
 
+// ── Feature 9: Batch Mode ─────────────────────────────────────────────────────
+function toggleBatchMode() {
+  batchMode = !batchMode;
+  document.getElementById('batchModeBar').style.display = batchMode ? '' : 'none';
+  document.getElementById('batchModeToggleBtn').classList.toggle('btn-outline-warning', batchMode);
+  document.getElementById('batchModeToggleBtn').classList.toggle('btn-outline-light', !batchMode);
+}
 
-// ── Render results with tabs ──────────────────────────────────────────────────
+async function generateBatch() {
+  const csv = document.getElementById('batchCsvInput').value.trim();
+  if (!csv) { alert('Enter CSV data.'); return; }
+  const brandIds = [...document.querySelectorAll('.brand-checkbox:checked')].map(cb => cb.value);
+  if (!brandIds.length) { alert('Select at least one brand.'); return; }
+  const clinicType = document.querySelector('input[name="clinicType"]:checked').value;
+  const contentLength = document.getElementById('contentLengthSelect').value;
+
+  const rows = csv.split('\n').map(r => r.trim()).filter(r => r);
+  if (!rows.length) { alert('No valid rows.'); return; }
+
+  const btn = document.querySelector('#batchModeBar .btn-generate');
+  const origText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+  batchResults = [];
+
+  const resultsArea = document.getElementById('resultsArea');
+  resultsArea.innerHTML = '<div class="text-muted text-center py-3">Processing batch...</div>';
+
+  for (let i = 0; i < rows.length; i++) {
+    const cols = rows[i].split(',').map(c => c.trim());
+    const address = cols[0] || '';
+    const doctorName = cols[1] || null;
+    const pronouns = cols[2] || null;
+    const pageType = cols[3] || 'open';
+    if (!address) continue;
+
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>${i+1}/${rows.length}...`;
+    try {
+      const body = { address, brand_ids: brandIds, page_type: pageType, clinic_type: clinicType, content_length: contentLength };
+      if (doctorName) body.doctor_name = doctorName;
+      if (pronouns) body.doctor_pronouns = pronouns;
+      const resp = await fetch(BASE_URL + 'api/generate', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+      });
+      if (!resp.ok) { batchResults.push({ address, error: (await resp.json()).detail }); continue; }
+      const data = await resp.json();
+      batchResults.push({ address, pageType, results: data.results });
+      addToHistory({ timestamp: new Date().toISOString(), address, pageType, brands: brandIds, results: data.results });
+    } catch (e) {
+      batchResults.push({ address, error: e.message });
+    }
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = origText;
+  renderBatchResults(batchResults);
+}
+
+function renderBatchResults(batch) {
+  const area = document.getElementById('resultsArea');
+  if (!batch.length) { area.innerHTML = '<div class="alert alert-warning">No batch results.</div>'; return; }
+
+  let nav = '<ul class="nav nav-tabs batch-addr-tab mb-0" role="tablist">';
+  let content = '<div class="tab-content">';
+
+  batch.forEach((item, ai) => {
+    const aId = `batch_addr_${ai}`;
+    const active = ai === 0 ? 'active' : '';
+    const show = ai === 0 ? 'show active' : '';
+    nav += `<li class="nav-item"><button class="nav-link ${active}" data-bs-toggle="tab" data-bs-target="#${aId}" type="button">${escHtml(item.address.substring(0,30))}${item.error ? ' ⚠️' : ''}</button></li>`;
+    if (item.error) {
+      content += `<div class="tab-pane fade ${show}" id="${aId}"><div class="alert alert-danger">${escHtml(item.error)}</div></div>`;
+    } else {
+      content += `<div class="tab-pane fade ${show}" id="${aId}">`;
+      // Inner brand tabs
+      content += `<ul class="nav nav-tabs batch-inner-tab mt-2" role="tablist">`;
+      item.results.forEach((r, ri) => {
+        const rId = `batch_r_${ai}_${ri}`;
+        const ract = ri === 0 ? 'active' : '';
+        content += `<li class="nav-item"><button class="nav-link ${ract}" data-bs-toggle="tab" data-bs-target="#${rId}" type="button">${escHtml(r.brand_name)}</button></li>`;
+      });
+      content += `</ul><div class="tab-content border border-top-0 p-3">`;
+      item.results.forEach((r, ri) => {
+        const rId = `batch_r_${ai}_${ri}`;
+        const rshow = ri === 0 ? 'show active' : '';
+        content += `<div class="tab-pane fade ${rshow}" id="${rId}">
+          <div class="meta-box mb-2"><strong>Title:</strong> ${escHtml(r.meta_title)}<br><strong>Desc:</strong> ${escHtml(r.meta_description)}</div>
+          <div class="content-area">${escHtml(r.content)}</div>
+        </div>`;
+      });
+      content += `</div></div>`;
+    }
+  });
+  nav += '</ul>';
+  content += '</div>';
+
+  const downloadBtn = `<div class="mb-2 text-end"><button class="btn btn-sm btn-outline-primary" onclick="downloadBatchAll()"><i class="bi bi-download me-1"></i>Download All (Batch)</button></div>`;
+  area.innerHTML = downloadBtn + nav + content;
+}
+
+function downloadBatchAll() {
+  if (!batchResults || !batchResults.length) { alert('No batch results.'); return; }
+  // Build JSON
+  const exportData = batchResults.map(item => ({
+    address: item.address,
+    pageType: item.pageType,
+    error: item.error || null,
+    brands: item.results ? item.results.map(r => ({
+      brand_id: r.brand_id, brand_name: r.brand_name, domain: r.domain,
+      seo_title: r.meta_title, seo_description: r.meta_description,
+      content: r.content
+    })) : [],
+  }));
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+  triggerDownload(blob, 'batch-export.json');
+}
+
+// ── Render Results ────────────────────────────────────────────────────────────
 function renderResults(data) {
   const area = document.getElementById('resultsArea');
 
-  // Header with download-all dropdown
   let headerHtml = `
     <div class="d-flex align-items-center justify-content-between mb-3">
       <div>
         <h5 class="mb-0">Results <span class="brand-count-badge">${data.results.length} brands</span></h5>
         <small class="text-muted">${escHtml(data.address)} — ${data.page_type === 'open' ? '✅ Open' : '🚧 Coming Soon'}</small>
       </div>
-      <div class="d-flex gap-2">
+      <div class="d-flex gap-2 flex-wrap">
         <button class="btn btn-sm btn-outline-secondary" onclick="copyAll()">
           <i class="bi bi-clipboard-plus"></i> Copy All
         </button>
@@ -499,10 +838,8 @@ function renderResults(data) {
           </ul>
         </div>
       </div>
-    </div>
-  `;
+    </div>`;
 
-  // Build tabs nav
   let tabsNav = '<ul class="nav nav-tabs result-tabs" role="tablist">';
   let tabsContent = '<div class="tab-content">';
 
@@ -525,15 +862,34 @@ function renderResults(data) {
     tabsContent += `
       <div class="tab-pane fade ${show}" id="${paneId}" role="tabpanel" aria-labelledby="${tabId}">
         <!-- Actions bar -->
-        <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
           <div class="d-flex align-items-center gap-2">
             <span class="brand-badge ${typeClass}">${brand.type || 'main'}</span>
             <span class="text-muted" style="font-size:0.78rem;">${escHtml(brand.domain || r.domain || '')}</span>
           </div>
-          <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-outline-primary copy-btn" onclick="copySection('content_${r.brand_id}')">
+          <div class="d-flex gap-2 flex-wrap">
+            <!-- View mode buttons -->
+            <div class="btn-group btn-group-sm" role="group">
+              <button class="btn btn-outline-secondary view-mode-btn active" id="viewBtn_${r.brand_id}" onclick="setViewMode('${r.brand_id}', 'view')">View</button>
+              <button class="btn btn-outline-secondary view-mode-btn" id="editBtn_${r.brand_id}" onclick="setViewMode('${r.brand_id}', 'edit')">✏️ Edit</button>
+              <button class="btn btn-outline-secondary view-mode-btn" id="previewBtn_${r.brand_id}" onclick="setViewMode('${r.brand_id}', 'preview')">👁 Preview</button>
+            </div>
+            <!-- Copy buttons -->
+            <button class="btn btn-sm btn-outline-primary copy-btn" onclick="copySection('${r.brand_id}')">
               <i class="bi bi-clipboard"></i> Copy
             </button>
+            <button class="btn btn-sm btn-outline-secondary copy-btn" onclick="copyAsHtml('${r.brand_id}')">
+              <i class="bi bi-code-slash"></i> Copy HTML
+            </button>
+            <!-- Compare -->
+            <button class="btn btn-sm btn-outline-info" onclick="openCompare('${r.brand_id}')">
+              <i class="bi bi-layout-split"></i>
+            </button>
+            <!-- Push to CMS (placeholder) -->
+            <button class="btn btn-sm btn-outline-secondary" disabled title="Coming soon — WordPress/CMS integration">
+              <i class="bi bi-wordpress"></i> Push to CMS
+            </button>
+            <!-- Download dropdown -->
             <div class="dropdown download-dropdown">
               <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
                 <i class="bi bi-download"></i>
@@ -554,88 +910,362 @@ function renderResults(data) {
           <div><strong>Meta description:</strong> ${escHtml(r.meta_description)}</div>
         </div>
 
-        <!-- Content -->
-        <div class="content-area" id="content_${r.brand_id}">${escHtml(r.content)}</div>
+        <!-- Content: view / edit / preview panels -->
+        <div id="viewPanel_${r.brand_id}">
+          ${buildSectionedContent(r)}
+        </div>
+        <div id="editPanel_${r.brand_id}" style="display:none;">
+          <textarea class="content-textarea" id="editArea_${r.brand_id}"
+            onchange="syncEdit('${r.brand_id}')"
+            oninput="syncEdit('${r.brand_id}')">${escHtml(r.content)}</textarea>
+        </div>
+        <div id="previewPanel_${r.brand_id}" style="display:none;">
+          <div class="preview-area" id="previewContent_${r.brand_id}">${mdToHtml(r.content)}</div>
+        </div>
       </div>`;
   });
 
   tabsNav += '</ul>';
   tabsContent += '</div>';
-
   area.innerHTML = headerHtml + tabsNav + tabsContent;
 }
 
+// ── Feature 1: View/Edit mode ─────────────────────────────────────────────────
+function setViewMode(brandId, mode) {
+  document.getElementById('viewPanel_' + brandId).style.display = mode === 'view' ? '' : 'none';
+  document.getElementById('editPanel_' + brandId).style.display = mode === 'edit' ? '' : 'none';
+  document.getElementById('previewPanel_' + brandId).style.display = mode === 'preview' ? '' : 'none';
 
-// ── Export / download helpers ─────────────────────────────────────────────────
+  ['view', 'edit', 'preview'].forEach(m => {
+    const btn = document.getElementById(m + 'Btn_' + brandId);
+    if (btn) btn.classList.toggle('active', m === mode);
+  });
+
+  // Populate preview on switch
+  if (mode === 'preview') {
+    const result = lastResults && lastResults.find(r => r.brand_id === brandId);
+    if (result) document.getElementById('previewContent_' + brandId).innerHTML = mdToHtml(result.content);
+  }
+  // Populate edit textarea with current content
+  if (mode === 'edit') {
+    const result = lastResults && lastResults.find(r => r.brand_id === brandId);
+    const ta = document.getElementById('editArea_' + brandId);
+    if (result && ta && !ta.dataset.synced) {
+      ta.value = result.content;
+      ta.dataset.synced = '1';
+    }
+  }
+}
+
+function syncEdit(brandId) {
+  if (!lastResults) return;
+  const ta = document.getElementById('editArea_' + brandId);
+  if (!ta) return;
+  const idx = lastResults.findIndex(r => r.brand_id === brandId);
+  if (idx >= 0) lastResults[idx].content = ta.value;
+}
+
+// ── Feature 3: Sectioned content with refresh buttons ────────────────────────
+function buildSectionedContent(result) {
+  const lines = result.content.split('\n');
+  let html = '';
+  let sectionIndex = -1;
+  let buffer = [];
+
+  function flushBuffer(secIdx) {
+    if (!buffer.length) return;
+    // Render each line
+    const text = buffer.join('\n');
+    html += `<div class="content-section" data-section="${secIdx}" data-brand="${result.brand_id}">`;
+    html += `<div class="content-area" style="margin-bottom:8px;">${escHtml(text)}</div>`;
+    html += `</div>`;
+    buffer = [];
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const isH2 = line.match(/^## /);
+    const isHR = line.match(/^---\s*$/);
+
+    if (isH2) {
+      flushBuffer(sectionIndex);
+      sectionIndex++;
+      const title = line.replace(/^## /, '').trim();
+      const safeTitle = escHtml(title);
+      html += `<div class="d-flex align-items-center mb-1">
+        <span class="fw-semibold text-secondary" style="font-size:0.82rem;">## ${safeTitle}</span>
+        <button class="section-refresh-btn" title="Regenerate this section"
+          onclick="regenerateSection('${escHtml(result.brand_id)}', ${sectionIndex}, '${safeTitle.replace(/'/g, "\\'")}')">🔄</button>
+      </div>`;
+      buffer.push(line);
+    } else {
+      buffer.push(line);
+    }
+  }
+  flushBuffer(sectionIndex);
+
+  // If no sections detected, just show plain content-area
+  if (sectionIndex < 0) {
+    html = `<div class="content-area" id="contentView_${result.brand_id}">${escHtml(result.content)}</div>`;
+  }
+
+  return html;
+}
+
+// ── Feature 3: Regenerate section ────────────────────────────────────────────
+async function regenerateSection(brandId, sectionIndex, sectionTitle) {
+  const result = lastResults && lastResults.find(r => r.brand_id === brandId);
+  if (!result) return;
+
+  const address = document.getElementById('addressInput').value.trim();
+  const pageType = document.querySelector('input[name="pageType"]:checked').value;
+  const doctorName = document.getElementById('doctorInput').value.trim() || null;
+  const doctorPronouns = document.getElementById('pronounsInput').value || null;
+  const contentLength = document.getElementById('contentLengthSelect').value;
+  const clinicType = document.querySelector('input[name="clinicType"]:checked').value;
+
+  const body = { brand_id: brandId, address, page_type: pageType, section_index: sectionIndex,
+    section_title: sectionTitle, content_length: contentLength, clinic_type: clinicType };
+  if (doctorName) body.doctor_name = doctorName;
+  if (doctorPronouns) body.doctor_pronouns = doctorPronouns;
+
+  const btn = event.target;
+  const origText = btn.textContent;
+  btn.textContent = '⏳';
+  btn.disabled = true;
+
+  try {
+    const resp = await fetch(BASE_URL + 'api/regenerate-section', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+    });
+    if (!resp.ok) throw new Error((await resp.json()).detail);
+    const data = await resp.json();
+
+    // Replace section in content
+    const lines = result.content.split('\n');
+    let secIdx = -1;
+    let startLine = -1, endLine = lines.length;
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].match(/^## /)) {
+        secIdx++;
+        if (secIdx === sectionIndex) startLine = i;
+        else if (secIdx === sectionIndex + 1) { endLine = i; break; }
+      }
+    }
+    if (startLine >= 0) {
+      const newLines = data.section.split('\n');
+      lines.splice(startLine, endLine - startLine, ...newLines);
+      result.content = lines.join('\n');
+      // Re-render the tab pane content
+      const viewPanel = document.getElementById('viewPanel_' + brandId);
+      if (viewPanel) viewPanel.innerHTML = buildSectionedContent(result);
+      const editArea = document.getElementById('editArea_' + brandId);
+      if (editArea) { editArea.value = result.content; }
+    }
+  } catch (e) {
+    alert('Regeneration failed: ' + e.message);
+  } finally {
+    btn.textContent = origText;
+    btn.disabled = false;
+  }
+}
+
+// ── Feature 2: Markdown → HTML conversion ────────────────────────────────────
+function mdToHtml(md) {
+  if (!md) return '';
+  const lines = md.split('\n');
+  let html = '';
+  let inList = false;
+  let listType = 'ul';
+  let skipMeta = false;
+
+  for (const line of lines) {
+    const s = line.trim();
+    if (s.match(/^## Meta [Tt]ags?/)) { skipMeta = true; continue; }
+    if (skipMeta) continue;
+    if (s === '---') {
+      if (inList) { html += `</${listType}>`; inList = false; }
+      html += '<hr/>';
+      continue;
+    }
+    if (s.startsWith('#### ')) {
+      if (inList) { html += `</${listType}>`; inList = false; }
+      html += `<h4>${inlineMd(s.slice(5))}</h4>`;
+    } else if (s.startsWith('### ')) {
+      if (inList) { html += `</${listType}>`; inList = false; }
+      html += `<h3>${inlineMd(s.slice(4))}</h3>`;
+    } else if (s.startsWith('## ')) {
+      if (inList) { html += `</${listType}>`; inList = false; }
+      html += `<h2>${inlineMd(s.slice(3))}</h2>`;
+    } else if (s.startsWith('# ')) {
+      if (inList) { html += `</${listType}>`; inList = false; }
+      html += `<h1>${inlineMd(s.slice(2))}</h1>`;
+    } else if (s.startsWith('- ')) {
+      if (!inList || listType !== 'ul') {
+        if (inList) html += `</${listType}>`;
+        html += '<ul>'; inList = true; listType = 'ul';
+      }
+      html += `<li>${inlineMd(s.slice(2))}</li>`;
+    } else if (s.match(/^\d+\.\s/)) {
+      if (!inList || listType !== 'ol') {
+        if (inList) html += `</${listType}>`;
+        html += '<ol>'; inList = true; listType = 'ol';
+      }
+      html += `<li>${inlineMd(s.replace(/^\d+\.\s/, ''))}</li>`;
+    } else if (!s) {
+      if (inList) { html += `</${listType}>`; inList = false; }
+    } else {
+      if (inList) { html += `</${listType}>`; inList = false; }
+      html += `<p>${inlineMd(s)}</p>`;
+    }
+  }
+  if (inList) html += `</${listType}>`;
+  return html;
+}
+
+function inlineMd(s) {
+  return s
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+    .replace(/<br>/gi, '<br/>');
+}
+
+// ── Feature 2: Copy as HTML ───────────────────────────────────────────────────
+function copyAsHtml(brandId) {
+  const result = lastResults && lastResults.find(r => r.brand_id === brandId);
+  if (!result) return;
+  const htmlContent = mdToHtml(result.content);
+  navigator.clipboard.writeText(htmlContent).then(() => {
+    // brief visual feedback
+    const pane = document.getElementById('pane-' + brandId);
+    if (pane) {
+      const btns = pane.querySelectorAll('.copy-btn');
+      btns.forEach(b => { if (b.textContent.includes('Copy HTML') || b.innerHTML.includes('code-slash')) {
+        const orig = b.innerHTML;
+        b.innerHTML = '<i class="bi bi-check2"></i> Copied HTML!';
+        b.classList.replace('btn-outline-secondary', 'btn-success');
+        setTimeout(() => { b.innerHTML = orig; b.classList.replace('btn-success', 'btn-outline-secondary'); }, 2000);
+      }});
+    }
+  });
+}
+
+// ── Feature 11: Compare ───────────────────────────────────────────────────────
+function openCompare(brandId) {
+  const result = lastResults && lastResults.find(r => r.brand_id === brandId);
+  if (!result) return;
+  document.getElementById('compareLeft').textContent = result.content;
+  document.getElementById('compareRight').value = '';
+  document.getElementById('diffOutput').innerHTML = '';
+  new bootstrap.Modal(document.getElementById('compareModal')).show();
+}
+
+async function fetchCompareUrl() {
+  const url = document.getElementById('compareUrlInput').value.trim();
+  if (!url) { alert('Enter a URL.'); return; }
+  try {
+    // Use a CORS proxy or just tell user to paste
+    const ta = document.getElementById('compareRight');
+    ta.value = 'Fetching... (Note: CORS restrictions may prevent direct fetch. Please paste content manually if this fails.)';
+    const resp = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+    if (!resp.ok) throw new Error('Fetch failed');
+    const data = await resp.json();
+    // Strip HTML tags
+    const tmp = document.createElement('div');
+    tmp.innerHTML = data.contents;
+    ta.value = tmp.innerText || tmp.textContent || '';
+    runDiff();
+  } catch(e) {
+    document.getElementById('compareRight').value = 'Could not fetch URL. Please paste the content manually.';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('compareRight').addEventListener('input', runDiff);
+});
+
+function runDiff() {
+  const left = document.getElementById('compareLeft').textContent.split('\n');
+  const right = document.getElementById('compareRight').value.split('\n');
+  const output = document.getElementById('diffOutput');
+  if (!right.join('').trim()) { output.innerHTML = ''; return; }
+
+  const maxLines = Math.max(left.length, right.length);
+  let diffHtml = '<div style="font-size:0.75rem; border:1px solid #eee; border-radius:6px; overflow:hidden;">';
+  let diffs = 0;
+  for (let i = 0; i < maxLines; i++) {
+    const l = left[i] || '';
+    const r = right[i] || '';
+    if (l !== r) {
+      diffs++;
+      if (l) diffHtml += `<div class="diff-line diff-removed">- ${escHtml(l)}</div>`;
+      if (r) diffHtml += `<div class="diff-line diff-added">+ ${escHtml(r)}</div>`;
+    }
+  }
+  diffHtml += '</div>';
+  output.innerHTML = diffs > 0 ? `<div class="text-muted mb-1" style="font-size:0.75rem;">${diffs} difference(s) found:</div>${diffHtml}` : '<div class="text-success" style="font-size:0.75rem;">✅ No differences found.</div>';
+}
+
+// ── Export helpers ────────────────────────────────────────────────────────────
 async function downloadAll(format) {
   if (!lastResults || !lastResults.length) return;
   await doExport(lastResults, format, 'all');
 }
-
 async function downloadBrand(brandId, format) {
   if (!lastResults || !lastResults.length) return;
   const filtered = lastResults.filter(r => r.brand_id === brandId);
   await doExport(filtered, format, brandId);
 }
-
 async function doExport(results, format, brandId) {
   try {
     const resp = await fetch(BASE_URL + 'api/export', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ results, format, brand_id: brandId }),
     });
-    if (!resp.ok) {
-      const err = await resp.json();
-      alert('Export failed: ' + (err.detail || 'Unknown error'));
-      return;
-    }
+    if (!resp.ok) { const err = await resp.json(); alert('Export failed: ' + (err.detail || 'Unknown error')); return; }
     const blob = await resp.blob();
     const cd = resp.headers.get('Content-Disposition') || '';
     const match = cd.match(/filename="(.+?)"/);
     const filename = match ? match[1] : `location-content.${format}`;
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  } catch (e) {
-    alert('Export failed: ' + e.message);
-  }
+    triggerDownload(blob, filename);
+  } catch (e) { alert('Export failed: ' + e.message); }
 }
-
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
 
 // ── Utility ───────────────────────────────────────────────────────────────────
 function escHtml(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function copySection(id) {
-  const el = document.getElementById(id);
-  navigator.clipboard.writeText(el.innerText).then(() => {
-    const btn = el.closest('.tab-pane').querySelector('.copy-btn');
-    const orig = btn.innerHTML;
-    btn.innerHTML = '<i class="bi bi-check2"></i> Copied!';
-    btn.classList.replace('btn-outline-primary', 'btn-success');
-    setTimeout(() => {
-      btn.innerHTML = orig;
-      btn.classList.replace('btn-success', 'btn-outline-primary');
-    }, 2000);
+function copySection(brandId) {
+  const result = lastResults && lastResults.find(r => r.brand_id === brandId);
+  const text = result ? result.content : '';
+  navigator.clipboard.writeText(text).then(() => {
+    const pane = document.getElementById('pane-' + brandId);
+    if (pane) {
+      const btn = pane.querySelector('.copy-btn');
+      if (btn) {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-check2"></i> Copied!';
+        btn.classList.replace('btn-outline-primary', 'btn-success');
+        setTimeout(() => { btn.innerHTML = orig; btn.classList.replace('btn-success', 'btn-outline-primary'); }, 2000);
+      }
+    }
   });
 }
 
 function copyAll() {
-  const all = [...document.querySelectorAll('.content-area')].map(el => el.innerText).join('\n\n' + '='.repeat(60) + '\n\n');
-  navigator.clipboard.writeText(all).then(() => {
-    // Brief feedback would need the button reference; fine as is
-  });
+  if (!lastResults) return;
+  const all = lastResults.map(r => '='.repeat(60) + '\n' + r.brand_name + '\n' + '='.repeat(60) + '\n' + r.content).join('\n\n');
+  navigator.clipboard.writeText(all);
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
