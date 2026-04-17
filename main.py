@@ -1004,6 +1004,149 @@ Start your journey to healthier legs today!
     return content, meta_title, meta_description
 
 
+def _generate_veinclinics_content(address: str, hood: str, city: str, state: str, city_state: str, page_type: str, region: str, doctor_name: Optional[str] = None) -> dict:
+    """
+    AI-generate veinclinics content — "5 Reasons" + "Treatment Journey" + directions from neighborhoods.
+    Poway, CA style for all locations.
+    """
+    coming_soon_note = "\nThe clinic is NOT yet open (Coming Soon). Adjust language accordingly — 'will offer', 'opening soon', etc." if page_type == "coming_soon" else ""
+    doctor_note = f"\nThe doctor at this location is {doctor_name}. Mention them naturally where appropriate." if doctor_name else ""
+
+    prompt = f"""You are an SEO-focused medical marketing copywriter for a vein clinic brand.
+
+Generate content for this vein clinic location:
+- Address: {address}
+- Neighborhood/City: {hood}
+- City: {city}, {state}
+- Region: {region}
+{coming_soon_note}{doctor_note}
+
+Return a JSON object with:
+
+1. "five_reasons": An array of exactly 5 objects, each with "title" and "description". These are the "5 Reasons We're the Best Vein Doctors in {city}, {state}". Each reason should be 2-3 sentences.
+   The 5 reasons MUST be:
+   a) "ABVLM Certification" — Hand-picked ABVLM-certified experts. American Board of Venous and Lymphatic Medicine certifies top 1% vein doctors. Most effective vein care standards.
+   b) "Vascular Imaging Training" — Registered physicians in vascular imaging. Can identify and treat root cause of spider veins and varicose veins, not just visible symptoms. Long-lasting results with negligible recurrence risk.
+   c) "Personalized Vein Care" — Believe in personalized vein care. Discuss symptoms and goals, examine leg veins, run advanced diagnostic tests. Highlight all treatment options with pros and cons.
+   d) "Minimally Invasive Treatments" — Only minimally invasive treatments (radiofrequency ablation, venaseal, sclerotherapy). Under local anesthesia, 30 minutes, no downtime or major complications. Resume activities immediately.
+   e) "No Surprise Billing" — Strict "no surprise billing" policy. Complete cost overview before procedure. Accept all major insurance plans including Medicare. Help maximize coverage.
+
+   Localize each reason by mentioning {city} or {hood} naturally. Don't just copy — rephrase naturally while keeping the key points.
+
+2. "treatment_journey_intro": A paragraph (4-6 sentences) about what to expect at a consultation. Mention: board-certified doctors examine leg veins, discuss symptoms and goals, review medical history, run vascular imaging tests. Determine if spider/varicose veins are symptomatic of chronic venous insufficiency. Recommend minimally invasive treatments addressing root cause while providing cosmetic relief.
+
+3. "treatment_list": Array of exactly 6 strings, each a treatment with brief description:
+   - Endovenous ablation (radiofrequency and laser) for chronic venous insufficiency and large varicose veins
+   - VenaSeal (vein glue) for chronic venous insufficiency and twisted varicose veins
+   - ClariVein (mechanochemical ablation) for extremely twisted varicose veins and underlying venous insufficiency
+   - Sclerotherapy for spider veins and superficial varicose veins
+   - Foam sclerotherapy for cosmetic treatment of larger varicose veins
+   - Phlebectomy for large varicose veins
+
+4. "directions_intro": One sentence introducing the clinic location, including the full address naturally. Style: "Our state-of-the-art vein clinic in {city}, {state}, is located in {address}."
+
+5. "neighborhood_directions": Array of 4-6 objects, each with "neighborhood" (name) and "direction" (one short sentence with road/landmark-based driving direction). Use real nearby neighborhoods.
+
+6. "meta_title": SEO title, 50-60 chars max. Include "vein clinic" + city. Example: "Best Vein Clinic in {city}, {state} | Vein Clinics {state}"
+
+7. "meta_description": SEO description, 150-160 chars max. Include keywords and CTA.
+
+Return ONLY valid JSON. No markdown."""
+
+    try:
+        resp = oai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.5,
+            max_tokens=1500,
+        )
+        raw = resp.choices[0].message.content.strip()
+        raw = re.sub(r'^```json\s*', '', raw)
+        raw = re.sub(r'\s*```$', '', raw)
+        return json.loads(raw)
+    except Exception:
+        return {
+            "five_reasons": [
+                {"title": "ABVLM Certification", "description": f"The vein doctors at our vein clinics in {city} are hand-picked amongst the country's leading ABVLM-certified experts."},
+                {"title": "Vascular Imaging Training", "description": f"Our vein doctors in {city} are registered physicians in vascular imaging, making them uniquely capable of identifying and treating root causes."},
+                {"title": "Personalized Vein Care", "description": f"Our vein clinics in {state} believe in personalized vein care tailored to your specific needs."},
+                {"title": "Minimally Invasive Treatments", "description": f"Our vein doctors in {city} only provide minimally invasive vein treatments, performed under local anesthesia within 30 minutes."},
+                {"title": "No Surprise Billing", "description": f"Our vein clinic in {city}, {state}, has a strict 'no surprise billing' policy."},
+            ],
+            "treatment_journey_intro": f"When you schedule a consultation at our vein clinics in {state} ({city}), you can expect a thoroughly comprehensive diagnosis and evaluation.",
+            "treatment_list": [
+                "Endovenous ablation (radiofrequency and laser) for chronic venous insufficiency and large varicose veins",
+                "VenaSeal (vein glue) for chronic venous insufficiency and twisted varicose veins",
+                "ClariVein (mechanochemical ablation) for extremely twisted varicose veins and underlying venous insufficiency",
+                "Sclerotherapy for spider veins and superficial varicose veins",
+                "Foam sclerotherapy for cosmetic treatment of larger varicose veins",
+                "Phlebectomy for large varicose veins",
+            ],
+            "directions_intro": f"Our state-of-the-art vein clinic in {city}, {state}, is located in {address}.",
+            "neighborhood_directions": [
+                {"neighborhood": "Nearby Area 1", "direction": "Take Main St toward the clinic."},
+                {"neighborhood": "Nearby Area 2", "direction": "Head south on Highway 1."},
+            ],
+            "meta_title": f"Best Vein Clinic in {city}, {state} | Vein Clinics",
+            "meta_description": f"Top-rated vein clinic in {city}, {state}. ABVLM-certified doctors, minimally invasive treatments, no surprise billing. Book today.",
+        }
+
+
+def build_content_veinclinics(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None) -> tuple[str, str, str]:
+    """Build veinclinics[xx] content — Poway style: 5 Reasons + Treatment Journey + Directions."""
+    hood = ctx["neighborhood_name"]
+    city = ctx["city"]
+    state = ctx["state"]
+    city_state = ctx["city_state"]
+    region = brand.get("region", state)
+
+    ai = _generate_veinclinics_content(address, hood, city, state, city_state, page_type, region, doctor_name)
+
+    five_reasons = ai.get("five_reasons", [])
+    treatment_intro = ai.get("treatment_journey_intro", "")
+    treatment_list = ai.get("treatment_list", [])
+    directions_intro = ai.get("directions_intro", "")
+    neighborhood_dirs = ai.get("neighborhood_directions", [])
+    meta_title = ai.get("meta_title", f"Best Vein Clinic in {city}, {state} | {brand['name']}")
+    meta_description = ai.get("meta_description", f"Top-rated vein clinic in {city}, {state}. Book today.")
+
+    coming_soon_label = " (Coming Soon)" if page_type == "coming_soon" else ""
+
+    # Section 1: 5 Reasons
+    reasons_items = ""
+    for r in five_reasons:
+        reasons_items += f"\n- **{r['title']}:** {r['description']}\n"
+
+    # Section 2: Treatment Journey
+    treatments_bullets = "\n".join(f"- {t}" for t in treatment_list)
+
+    # Section 3: Directions
+    directions_items = ""
+    for nd in neighborhood_dirs:
+        directions_items += f"\n**To get to our Vein Clinic Near {nd['neighborhood']}:**\n\n{nd['direction']}\n\nGet Directions >\n"
+
+    content = f"""# 5 Reasons We're the Best Vein Doctors in {city}, {state}{coming_soon_label}
+{reasons_items}
+---
+
+# Your Vein Treatment Journey at the Best Vein Clinics in {state} ({city})
+
+{treatment_intro}
+
+The following are some of the minimally invasive vein treatments at our vein clinic in {city}:
+
+{treatments_bullets}
+
+---
+
+# Directions to Our Vein Clinic in {city}, {state}
+
+{directions_intro}
+{directions_items}"""
+
+    return content, meta_title, meta_description
+
+
 def build_content_regional(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None) -> tuple[str, str, str]:
     """Build regional site content (shorter template)."""
     brand_name = brand["name"]
@@ -1160,6 +1303,8 @@ def generate_content_for_brand(brand_id: str, address: str, page_type: str, doct
         content, meta_title, meta_desc = build_content_legulcercenter(brand, address, page_type, ctx, doctor_name)
     elif brand_id.startswith("veintreatment") and brand_id != "veintreatment" and brand_type == "regional":
         content, meta_title, meta_desc = build_content_regional_veintreatment(brand, address, page_type, ctx, doctor_name)
+    elif brand.get("group") == "Vein Clinics":
+        content, meta_title, meta_desc = build_content_veinclinics(brand, address, page_type, ctx, doctor_name)
     elif brand_type in ("regional", "other"):
         content, meta_title, meta_desc = build_content_regional(brand, address, page_type, ctx, doctor_name)
     else:
