@@ -559,147 +559,94 @@ Serving patients from:
     return content, meta_title, meta_desc
 
 
+def _generate_venasvarices_content(address: str, hood: str, city: str, city_state: str, page_type: str, doctor_name: Optional[str] = None) -> dict:
+    """
+    AI-generate the paragraph + optimized meta tags for Venas Varices.
+    Returns dict with: paragraph, meta_title, meta_description
+    """
+    coming_soon_note = """\nThe clinic is NOT yet open (Coming Soon). The paragraph should mention it will open soon ("próximamente") and invite patients to call ahead.
+""" if page_type == "coming_soon" else ""
+
+    doctor_note = f"\nThe doctor at this location is {doctor_name}. Mention them naturally in the paragraph." if doctor_name else ""
+
+    prompt = f"""You are a Spanish-language medical marketing copywriter for Venas Varices (a vein treatment clinic brand).
+
+Generate content for this location:
+- Address: {address}
+- Neighborhood: {hood}
+- City: {city}
+- City, State: {city_state}
+{coming_soon_note}{doctor_note}
+
+Generate a JSON object with:
+
+1. "paragraph": A single compelling paragraph in Spanish (3-5 sentences). Must naturally include:
+   - Keywords: "arañitas", "venas varicosas", "especialistas en varices", "tratamiento de varices"
+   - The full address
+   - The city/neighborhood name
+   - A welcoming tone ("Le damos la bienvenida" or similar)
+   - Mention of advanced technology and minimally invasive treatments
+   Style reference: "Somos especialistas dedicados a ofrecer los tratamientos más avanzados para la eliminación de arañitas y venas varicosas, utilizando tecnología de punta para evitar cirugías complicadas y tiempos de recuperación innecesarios."
+
+2. "meta_title": SEO-optimized title tag in Spanish.
+   - MUST be 50-60 characters max
+   - Include primary keyword ("varices" or "venas varicosas") + city/neighborhood
+   - Brand name "Venas Varices" at end if space allows
+   - Example format: "Tratamiento de Varices en [City] | Venas Varices"
+
+3. "meta_description": SEO-optimized meta description in Spanish.
+   - MUST be 150-160 characters max
+   - Include keywords, city, and a CTA ("Agende su cita", "Llame hoy", etc.)
+   - Mention "mínimamente invasivo" or "sin cirugía"
+
+Return ONLY valid JSON. No markdown, no extra text."""
+
+    try:
+        resp = oai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.6,
+            max_tokens=500,
+        )
+        raw = resp.choices[0].message.content.strip()
+        raw = re.sub(r'^```json\s*', '', raw)
+        raw = re.sub(r'\s*```$', '', raw)
+        return json.loads(raw)
+    except Exception:
+        # Fallback
+        if page_type == "coming_soon":
+            return {
+                "paragraph": f"Próximamente en {hood}, {city_state}. Venas Varices abrirá una nueva clínica dedicada al tratamiento de arañitas y venas varicosas, ubicada en {address}. Nuestros especialistas en varices utilizan tecnología de punta y procedimientos mínimamente invasivos para evitar cirugías complicadas. ¡Llame para reservar su cita con anticipación!",
+                "meta_title": f"Clínica de Varices en {hood} | Próximamente",
+                "meta_description": f"Próximamente en {hood}, {city_state}. Especialistas en varices y arañitas con tratamientos mínimamente invasivos. Agende su cita hoy.",
+            }
+        return {
+            "paragraph": f"Somos especialistas dedicados a ofrecer los tratamientos más avanzados para la eliminación de arañitas y venas varicosas, utilizando tecnología de punta para evitar cirugías complicadas y tiempos de recuperación innecesarios. Si está buscando médicos especialistas en varices en {hood}, {city}, ha llegado al lugar correcto. ¡Le damos la bienvenida a nuestra clínica Venas Varices, ubicada en {address}!",
+            "meta_title": f"Tratamiento de Varices en {hood} | Venas Varices",
+            "meta_description": f"Especialistas en varices y arañitas en {hood}, {city_state}. Tratamientos mínimamente invasivos sin cirugía. Agende su cita hoy.",
+        }
+
+
 def build_content_venasvarices(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None) -> tuple[str, str, str]:
-    """Build Spanish content for Venas Varices."""
+    """Build Spanish content for Venas Varices — simple template: H1 + address + AI paragraph."""
     hood = ctx["neighborhood_name"]
     city = ctx["city"]
     city_state = ctx["city_state"]
-    neighborhoods = "\n".join(f"- {n}" for n in ctx["neighborhoods_list"])
-    directions = ctx["directions_paragraph"]
-    local_phrase = ctx["local_phrase"]
-    page_title_loc = ctx["page_title_location"]
-    phone = brand["phone"]
-    treatments_list = "\n".join(f"- {t}" for t in brand["treatments"])
-    conditions_list = "\n".join(f"- {c}" for c in brand["conditions"])
-    trust_list = "\n".join(f"- {t}" for t in brand["trust_points"])
 
-    # Doctor section in Spanish
-    doctor_sec = ""
-    if doctor_name:
-        doctor_sec = f"""
----
+    # AI generates the paragraph + optimized meta tags
+    ai = _generate_venasvarices_content(address, hood, city, city_state, page_type, doctor_name)
 
-## Conozca a Su Doctor
+    paragraph = ai.get("paragraph", "")
+    meta_title = ai.get("meta_title", f"Tratamiento de Varices en {hood} | Venas Varices")
+    meta_description = ai.get("meta_description", f"Especialistas en varices en {hood}, {city_state}. Tratamientos mínimamente invasivos. Agende su cita.")
 
-El Dr. {doctor_name} lidera nuestra clínica en {hood}, brindando atención experta con un enfoque centrado en el paciente. Con formación avanzada en técnicas mínimamente invasivas, el Dr. {doctor_name} está comprometido con los más altos estándares de atención vascular.
-"""
+    content = f"""# {hood}
 
-    if page_type == "coming_soon":
-        content = f"""# Tratamiento de Várices y Arañas Vasculares en {page_title_loc}
+{address}
 
-**Dirección:** {address}
+{paragraph}"""
 
-Venas Varices pronto abrirá una nueva clínica en {hood}, {city_state}. Esta ubicación ofrecerá atención especializada para pacientes con várices, arañas vasculares e insuficiencia venosa.
-
-📞 **Llámenos para más información o para reservar su cita con anticipación:** {phone}
-
----
-
-## Su Clínica de Venas Varices en {hood}, {city}
-
-Nuestra nueva clínica en {hood} estará diseñada para brindar acceso conveniente a pacientes de:
-
-{neighborhoods}
-
----
-
-## Ubicación conveniente
-
-{directions}
-
-Los detalles de cómo llegar estarán disponibles próximamente.
-
----
-
-## Nuestros Servicios
-
-{treatments_list}
-
----
-
-## Condiciones que Tratamos
-
-{conditions_list}
-
----
-
-## ¿Por qué elegirnos?
-
-{trust_list}
-{doctor_sec}
----
-
-## Abrimos Pronto — Reserve su Cita
-
-📞 **{phone}**
-
----
-
-## Meta Tags
-
-**Title:** Clínica de Várices en {hood} {city} | Próximamente
-**Meta description:** Próximamente en {hood}, {city_state}. Venas Varices trata várices y arañas vasculares con opciones mínimamente invasivas. Reserve su cita hoy.
-"""
-        meta_title = f"Clínica de Várices en {hood} {city} | Próximamente"
-        meta_desc = f"Próximamente en {hood}, {city_state}. Venas Varices trata várices y arañas vasculares con opciones mínimamente invasivas como escleroterapia y RFA. Reserve hoy."
-    else:
-        content = f"""# Tratamiento de Várices y Arañas Vasculares en {page_title_loc}
-
-**Dirección:** {address}
-
-Bienvenido a Venas Varices en {hood}, {city_state}. Nuestra clínica ofrece tratamientos especializados y mínimamente invasivos para várices y arañas vasculares, {local_phrase}.
-
-📞 **Llámenos o reserve su cita:** {phone}
-
----
-
-## Su Clínica de Venas en {hood}, {city}
-
-Atendemos pacientes de:
-
-{neighborhoods}
-
----
-
-## Cómo llegar
-
-{directions}
-
----
-
-## Nuestros Servicios
-
-{treatments_list}
-
----
-
-## Condiciones que Tratamos
-
-{conditions_list}
-
----
-
-## ¿Por qué elegirnos?
-
-{trust_list}
-{doctor_sec}
----
-
-## Reserve su Cita
-
-📞 **{phone}**
-
----
-
-## Meta Tags
-
-**Title:** Tratamiento de Várices en {hood}, {ctx['state']} | Venas Varices
-**Meta description:** Tratamiento de várices y arañas vasculares en {hood}, {city_state}. Especialistas certificados, procedimientos mínimamente invasivos. Reserve hoy.
-"""
-        meta_title = f"Tratamiento de Várices en {hood}, {ctx['state']} | Venas Varices"
-        meta_desc = f"Tratamiento de várices y arañas vasculares en {hood}, {city_state}. Especialistas certificados, procedimientos mínimamente invasivos. Reserve hoy."
-
-    return content, meta_title, meta_desc
+    return content, meta_title, meta_description
 
 
 def build_content_veindoctor(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None) -> tuple[str, str, str]:
