@@ -140,151 +140,117 @@ Dr. {doctor_name} leads our {hood} clinic at {brand_name}, providing expert care
 
 # ── Content generators ────────────────────────────────────────────────────────
 
+def _generate_vtc_content(address: str, hood: str, city: str, state: str, city_state: str, page_type: str, phone: str, doctor_name: Optional[str] = None) -> dict:
+    """
+    AI-generate VTC location content:
+    - intro_bold: bold intro sentence ("Discover our exceptional vein clinic...")
+    - directions_paragraph: detailed with transit (NYC) or landmarks (others)
+    - subway_lines: list (NYC only)
+    - landmarks: 3 nearby landmarks
+    - meta_title: 50-60 chars optimized
+    - meta_description: 150-160 chars optimized
+    """
+    is_nyc = state == "NY" and city.lower() in ("new york", "new york city", "nyc", "manhattan", "brooklyn", "queens", "bronx", "staten island")
+
+    coming_soon_note = "\nThe clinic is NOT yet open (Coming Soon). Mention it's opening soon." if page_type == "coming_soon" else ""
+    doctor_note = f"\nThe doctor at this location is {doctor_name}. Mention them naturally." if doctor_name else ""
+
+    subway_instruction = '- "subway_lines": Array of subway line numbers/letters serving this area. Be accurate.' if is_nyc else '- "subway_lines": Empty array []'
+
+    prompt = f"""You are a medical marketing copywriter for Vein Treatment Clinic (VTC).
+
+Generate content for this location:
+- Address: {address}
+- Neighborhood: {hood}
+- City: {city}, {state}
+- Phone: {phone}
+{coming_soon_note}{doctor_note}
+
+Return a JSON object with:
+
+1. "intro_bold": One bold introductory sentence (15-25 words). Style: "Discover our exceptional vein clinic in the heart of {hood}. Conveniently located to serve you better." Must feel welcoming and professional.
+
+2. "directions_paragraph": A paragraph (3-5 sentences) about getting to the clinic. Include the full address naturally. {'For NYC: mention specific subway stations, train lines, and walking directions from transit hubs.' if is_nyc else 'Mention major roads, highways, and nearby landmarks.'} End with something encouraging about the visit.
+
+{subway_instruction}
+
+3. "landmarks": Array of exactly 3 real nearby landmarks (just names, e.g. ["Grand Central-42 St", "Bryant Park", "Empire State Building"])
+
+4. "meta_title": SEO title, 50-60 chars max. Include "spider veins" or "varicose veins" + location. Format: "Spider & Varicose Vein Treatment in [Location] | VTC"
+
+5. "meta_description": SEO description, 150-160 chars max. Include keywords (spider veins, varicose veins, vein treatment), city, and CTA.
+
+Return ONLY valid JSON. No markdown."""
+
+    try:
+        resp = oai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.5,
+            max_tokens=600,
+        )
+        raw = resp.choices[0].message.content.strip()
+        raw = re.sub(r'^```json\s*', '', raw)
+        raw = re.sub(r'\s*```$', '', raw)
+        return json.loads(raw)
+    except Exception:
+        return {
+            "intro_bold": f"Discover our exceptional vein clinic in {hood}. Conveniently located to serve you better.",
+            "directions_paragraph": f"Located at {address}, our clinic is easily accessible for patients throughout {city} and the surrounding area.",
+            "subway_lines": [],
+            "landmarks": ["Nearby landmark 1", "Nearby landmark 2", "Nearby landmark 3"],
+            "meta_title": f"Spider & Varicose Vein Treatment in {hood} | VTC",
+            "meta_description": f"Expert spider & varicose vein treatment in {hood}, {city_state}. Minimally invasive care by board-certified specialists. Book today.",
+        }
+
+
 def build_content_vtc(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None) -> tuple[str, str, str]:
-    """Build VTC-style content (main vein brand)."""
-    brand_name = brand["name"]
+    """Build VTC content — matches live site: H2 intro + H1 location + address + phone + H2 premier + directions + subway/landmarks."""
     hood = ctx["neighborhood_name"]
     city = ctx["city"]
+    state = ctx["state"]
     city_state = ctx["city_state"]
-    neighborhoods = "\n".join(f"- {n}" for n in ctx["neighborhoods_list"])
-    directions = ctx["directions_paragraph"]
-    local_phrase = ctx["local_phrase"]
-    page_title_loc = ctx["page_title_location"]
     phone = brand["phone"]
-    treatments_list = "\n".join(f"- {t}" for t in brand["treatments"])
-    conditions_list = "\n".join(f"- {c}" for c in brand["conditions"])
-    trust_list = "\n".join(f"- {t}" for t in brand["trust_points"])
-    doctor_sec = _doctor_section(doctor_name, hood, brand_name)
 
-    if page_type == "coming_soon":
-        content = f"""# Spider & Varicose Vein Treatment in {page_title_loc}
+    ai = _generate_vtc_content(address, hood, city, state, city_state, page_type, phone, doctor_name)
 
-**Address:** {address}
+    intro_bold = ai.get("intro_bold", "")
+    directions = ai.get("directions_paragraph", "")
+    subway_lines = ai.get("subway_lines", [])
+    landmarks = ai.get("landmarks", [])
+    meta_title = ai.get("meta_title", f"Spider & Varicose Vein Treatment in {hood} | VTC")
+    meta_description = ai.get("meta_description", f"Expert vein treatment in {hood}, {city_state}. Book today.")
 
-{brand_name} is expanding its network with a new clinic coming soon to {hood}, {city_state}. This location will provide specialized care for patients experiencing varicose veins, spider veins, and venous insufficiency, with appointments opening soon.
+    coming_soon_label = " (Coming soon!)" if page_type == "coming_soon" else ""
 
-📞 **Call us to learn more or book your appointment in advance:** {phone}
+    # Build subway section (NYC only)
+    subway_sec = ""
+    if subway_lines:
+        lines_str = ", ".join(subway_lines)
+        subway_sec = f"\n## Subway / Bus Services\n\n{lines_str}\n"
 
----
+    # Build landmarks section
+    landmarks_sec = ""
+    if landmarks:
+        landmarks_list = "\n".join(f"- {lm}" for lm in landmarks)
+        landmarks_sec = f"\n## Landmarks Nearby\n\n{landmarks_list}\n"
 
-## Your {brand_name} in {hood}, {city}
+    content = f"""## Spider & varicose vein treatment in
 
-Our new clinic in {hood} is designed to provide convenient access to minimally invasive vein treatment for patients in:
+# {hood}, {state}{coming_soon_label}
 
-{neighborhoods}
+{address}
 
-If you are searching for a vein doctor or vein clinic near you, this location will offer a nearby option for expert evaluation and treatment.
+{phone}
 
----
+## Your premier vein treatment clinic in {hood}, {city}
 
-## Convenient Location {local_phrase}
-
-{directions}
-
-Additional directions and transportation details will be available once we open.
-
----
-
-## Our Services — Personalized vein care, tailored to you
-
-At our {hood} clinic, we provide a full range of services focused on diagnosing and treating vein disease:
-
-{treatments_list}
-
----
-
-## Conditions We Treat
-
-{conditions_list}
-
----
-
-## Why Choose {brand_name}
-
-{trust_list}
-{doctor_sec}
----
-
-## Opening Soon — Book Your Appointment
-
-We're preparing to open in {hood}. In the meantime, call us to learn more or book your appointment in advance. Our other clinics are ready to welcome you now.
-
-📞 **{phone}**
-
----
-
-## Meta Tags
-
-**Title:** {brand_name} in {hood} {city} | Opening Soon
-**Meta description:** Opening soon in {hood}, {city_state}. {brand_name} treats varicose and spider veins with minimally invasive options. Schedule today.
-"""
-        meta_title = f"{brand_name} in {hood} {city} | Opening Soon"
-        meta_desc = f"Opening soon in {hood}, {city_state}. {brand_name} treats varicose and spider veins with minimally invasive options like sclerotherapy and RFA. Schedule today."
-
-    else:  # open
-        content = f"""# Spider & Varicose Vein Treatment in {page_title_loc}
-
-**Address:** {address}
-
-Welcome to {brand_name} in {hood}, {city_state}. Our clinic provides expert, minimally invasive care for varicose veins, spider veins, and venous insufficiency — right {local_phrase}.
-
-📞 **Call us or book your appointment:** {phone}
-
----
-
-## Your Premier Vein Treatment Clinic in {hood}, {city}
-
-Our {hood} clinic is designed to provide convenient access to the best vein care for patients throughout {city_state}:
-
-{neighborhoods}
-
-Whether you're searching for a vein doctor or looking to treat uncomfortable varicose or spider veins, our specialists are ready to help.
-
----
-
-## Convenient Location {local_phrase}
+**{intro_bold}**
 
 {directions}
+{subway_sec}{landmarks_sec}"""
 
----
-
-## Our Services — Personalized vein care, tailored to you
-
-At our {hood} clinic, we provide a comprehensive range of vein treatment services:
-
-{treatments_list}
-
----
-
-## Conditions We Treat
-
-{conditions_list}
-
----
-
-## Why Choose {brand_name}
-
-{trust_list}
-{doctor_sec}
----
-
-## Book Your Appointment Today
-
-Ready to get started? Our {hood} clinic is accepting new patients.
-
-📞 **Call us:** {phone}
-
----
-
-## Meta Tags
-
-**Title:** {brand_name} in {hood} {city} | Expert Vein Treatment
-**Meta description:** Expert vein treatment in {hood}, {city_state}. {brand_name} offers minimally invasive care for varicose and spider veins. Ivy League-trained specialists. Book today.
-"""
-        meta_title = f"{brand_name} in {hood} {city} | Expert Vein Treatment"
-        meta_desc = f"Expert vein treatment in {hood}, {city_state}. {brand_name} offers minimally invasive care for varicose and spider veins. Board-certified specialists. Book today."
-
-    return content, meta_title, meta_desc
+    return content, meta_title, meta_description
 
 
 def _generate_vip_content(address: str, hood: str, city: str, state: str, city_state: str, page_type: str, clinic_type: str = "vein", doctor_name: Optional[str] = None) -> dict:
