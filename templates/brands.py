@@ -110,7 +110,7 @@ BRANDS = {
             "Nerve pain",
         ],
         "trust_points": [
-            "Harvard-trained, fellowship-certified pain specialists",
+            "Ivy League-trained, fellowship-certified pain specialists",
             "Non-surgical, minimally invasive approach",
             "Most insurances accepted",
             "State-of-the-art pain management techniques",
@@ -713,9 +713,9 @@ BRANDS = {
             "Leg swelling and heaviness",
         ],
         "trust_points": [
-            "Harvard-trained leadership team with collaborative care approach",
+            "Ivy League-trained leadership team with collaborative care approach",
             "Minimally invasive, zero-downtime procedures",
-            "Most major insurances accepted, including Medicare",
+            "Most major insurances accepted",
             "5-star ratings across Google, Facebook, and RealSelf",
             "State-of-the-art facilities with cutting-edge technology",
             "Free insurance verification before treatment",

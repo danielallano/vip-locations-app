@@ -64,9 +64,15 @@ class ExportRequest(BaseModel):
 # ── Content rules (shared across all AI prompts) ─────────────────────────────
 
 CONTENT_RULES = """
-IMPORTANT CONTENT RULES:
+IMPORTANT CONTENT RULES — follow these strictly:
 - Do NOT mention VenaSeal as a treatment. We do not offer it.
-- Do NOT use the phrase "state-of-the-art". Use alternatives like "advanced", "modern", "cutting-edge", or just describe the specific technology.
+- Do NOT use the phrase "state-of-the-art". Use "advanced", "modern", "cutting-edge", or describe the specific technology.
+- Do NOT use "Harvard-trained". Use "Ivy League-trained" instead.
+- Do NOT mention "IAC accredited" or "IAC accreditation".
+- Do NOT mention "Medicare" specifically. Say "most major insurance plans" or "major insurances".
+- Do NOT say "perfect track record". Say "excellent track record" or similar.
+- Use "board-certified" generically. Do not always specify ABVLM — some doctors have other board certifications.
+- For pain management: use "non-surgical, non-opioid" instead of "no surgery or narcotics".
 """
 
 # ── AI helper ─────────────────────────────────────────────────────────────────
@@ -481,7 +487,7 @@ Generate the "Meet our Team" section for this pain clinic location.
 
 Return a JSON object with:
 
-1. "paragraph_1": First paragraph (3-4 sentences). Introduce the doctor at the {hood} Pain Clinic. Mention that {doctor_name} specializes in interventional pain treatments, addressing acute, chronic, and medical pain without resorting to surgery or addictive narcotics. {doctor_name}'s focus is on providing accurate diagnoses and personalized treatment plans for various pain issues in a cutting-edge facility.
+1. "paragraph_1": First paragraph (3-4 sentences). Introduce the doctor at the {hood} Pain Clinic. Mention that {doctor_name} specializes in interventional pain treatments, addressing acute, chronic, and medical pain using non-surgical, non-opioid approaches. {doctor_name}'s focus is on providing accurate diagnoses and personalized treatment plans for various pain issues in a cutting-edge facility.
 
 2. "paragraph_2": Second paragraph (3-4 sentences). Say that {p['subject'].lower()} prioritizes comprehensive patient care, addressing not only the source of pain but also the holistic needs of {p['possessive'].lower()} patients. {doctor_name} is renowned for {p['possessive'].lower()} expertise, having trained at esteemed institutions and staying updated with the latest developments in pain management through active participation in national medical conferences.
 
@@ -510,7 +516,7 @@ Return ONLY valid JSON. No markdown."""
         return json.loads(raw)
     except Exception:
         return {
-            "paragraph_1": f"At the {hood} Pain Clinic, {doctor_name} specializes in interventional pain treatments, addressing acute, chronic, and medical pain without resorting to surgery or addictive narcotics. {doctor_name}'s focus is on providing accurate diagnoses and personalized treatment plans for various pain issues in a cutting-edge facility.",
+            "paragraph_1": f"At the {hood} Pain Clinic, {doctor_name} specializes in interventional pain treatments, addressing acute, chronic, and medical pain using non-surgical, non-opioid approaches. {doctor_name}'s focus is on providing accurate diagnoses and personalized treatment plans for various pain issues in a cutting-edge facility.",
             "paragraph_2": f"{p['subject']} prioritizes comprehensive patient care, addressing not only the source of pain but also the holistic needs of {p['possessive'].lower()} patients. {doctor_name} is renowned for {p['possessive'].lower()} expertise, having trained at esteemed institutions and staying updated with the latest developments in pain management through active participation in national medical conferences.",
             "paragraph_3": f"{doctor_name} creates tailored treatment strategies for all {p['possessive'].lower()} patients by attentively listening to their pain concerns and applying {p['possessive'].lower()} specialized knowledge of pain medicine. {p['possessive']} goal is to deliver effective and enduring pain relief, ensuring patients receive the highest standard of care at the {hood} Pain Clinic. Our clinic is dedicated to enhancing each patient's quality of life.",
             "meta_title": f"Pain Management in {hood}, {state} | Pain Treatment Specialists",
@@ -663,7 +669,7 @@ Return a JSON object with:
    - Keywords: "vein doctor", "vein specialist", "find a vein doctor near me", "board-certified", "varicose veins", "spider veins", "chronic venous insufficiency"
    - The full address naturally in the text
    - What to expect at the first visit (consultation, duplex ultrasound evaluation, personalized treatment plan)
-   - Doctor credentials (board-certified, Harvard-trained, fellowship-certified)
+   - Doctor credentials (board-certified, Ivy League-trained, fellowship-certified)
    - Reassurance: minimally invasive, same-day procedures, insurance accepted, zero downtime
    - Welcoming tone, patient-centered
    
@@ -753,7 +759,7 @@ Monday - Friday: 9:00 am - 7:00 pm
 
 ## Top rated vein experts
 
-We employ a collaborative approach to every case: our doctors and staff spend time discussing each patient, and use resources across our broad network of facilities. Our medical directors review each case and perform rigorous quality assurance. When you meet one of us, you meet all of us, including our Harvard-trained leadership team.
+We employ a collaborative approach to every case: our doctors and staff spend time discussing each patient, and use resources across our broad network of facilities. Our medical directors review each case and perform rigorous quality assurance. When you meet one of us, you meet all of us, including our Ivy League-trained leadership team.
 
 Regardless of where you go, you can expect the same high-quality standards. We are conveniently located across the nation.
 
@@ -811,7 +817,7 @@ We understand that quality health care still needs to be affordable. Before we t
 Your vein doctor will decide on the optimal vein treatment following your initial appointment and a discussion of your unique treatment objectives. Sclerotherapy and radiofrequency ablation are some of the most effective remedies for varicose and spider veins.
 
 ### How much does it cost to treat veins?
-Most major insurances, including Medicare, frequently pay for vein treatments. However, the price might range from $800 to $3000 if you choose to pay cash.
+Most major insurances, including most major providers, frequently pay for vein treatments. However, the price might range from $800 to $3000 if you choose to pay cash.
 
 ### Do I need a physician referral?
 No. Most of the healthcare professionals we work with don't need a referral from a doctor. However, some insurances do; if this is the case, give us a call and our verifications team will assist you.
@@ -821,10 +827,10 @@ No. Most of the healthcare professionals we work with don't need a referral from
 ## Meta Tags
 
 **Title:** Vein Treatment Clinic in {hood}, {state} | Coming Soon
-**Meta description:** Coming soon to {hood}, {city_state}. Harvard-trained vein specialists. Zero downtime procedures. Insurance accepted. Call {phone}.
+**Meta description:** Coming soon to {hood}, {city_state}. Ivy League-trained vein specialists. Zero downtime procedures. Insurance accepted. Call {phone}.
 """
         meta_title = f"Vein Treatment Clinic in {hood}, {state} | Coming Soon"
-        meta_desc = f"Coming soon to {hood}, {city_state}. Harvard-trained vein specialists. Zero downtime procedures. Insurance accepted. Call {phone}."
+        meta_desc = f"Coming soon to {hood}, {city_state}. Ivy League-trained vein specialists. Zero downtime procedures. Insurance accepted. Call {phone}."
     else:
         content = f"""# Vein Treatment Clinic in {page_title_loc}
 
@@ -844,7 +850,7 @@ Monday - Friday: 9:00 am - 7:00 pm
 
 ## Top rated vein experts
 
-We employ a collaborative approach to every case: our doctors and staff spend time discussing each patient, and use resources across our broad network of facilities. Our medical directors review each case and perform rigorous quality assurance. When you meet one of us, you meet all of us, including our Harvard-trained leadership team.
+We employ a collaborative approach to every case: our doctors and staff spend time discussing each patient, and use resources across our broad network of facilities. Our medical directors review each case and perform rigorous quality assurance. When you meet one of us, you meet all of us, including our Ivy League-trained leadership team.
 
 Regardless of where you go, you can expect the same high-quality standards. We are conveniently located across the nation.
 
@@ -904,7 +910,7 @@ We understand that quality health care still needs to be affordable. Before we t
 Your vein doctor will decide on the optimal vein treatment following your initial appointment and a discussion of your unique treatment objectives. Sclerotherapy and radiofrequency ablation are some of the most effective remedies for varicose and spider veins.
 
 ### How much does it cost to treat veins?
-Most major insurances, including Medicare, frequently pay for vein treatments. However, the price might range from $800 to $3000 if you choose to pay cash.
+Most major insurances, including most major providers, frequently pay for vein treatments. However, the price might range from $800 to $3000 if you choose to pay cash.
 
 ### Do I need a physician referral?
 No. Most of the healthcare professionals we work with don't need a referral from a doctor. However, some insurances do; if this is the case, give us a call and our verifications team will assist you.
@@ -920,10 +926,10 @@ No. Most of the healthcare professionals we work with don't need a referral from
 ## Meta Tags
 
 **Title:** Vein Treatment Clinic in {hood}, {state} | Leg Ulcer Center
-**Meta description:** Expert vein treatment in {hood}, {city_state}. Harvard-trained specialists, zero downtime procedures, insurance accepted. Visit our {hood} clinic today. Call {phone}.
+**Meta description:** Expert vein treatment in {hood}, {city_state}. Ivy League-trained specialists, zero downtime procedures, insurance accepted. Visit our {hood} clinic today. Call {phone}.
 """
         meta_title = f"Vein Treatment Clinic in {hood}, {state} | Leg Ulcer Center"
-        meta_desc = f"Expert vein treatment in {hood}, {city_state}. Harvard-trained specialists, zero downtime procedures, insurance accepted. Visit our {hood} clinic today. Call {phone}."
+        meta_desc = f"Expert vein treatment in {hood}, {city_state}. Ivy League-trained specialists, zero downtime procedures, insurance accepted. Visit our {hood} clinic today. Call {phone}."
 
     return content, meta_title, meta_desc
 
@@ -1045,11 +1051,11 @@ Return a JSON object with:
 
 1. "five_reasons": An array of exactly 5 objects, each with "title" and "description". These are the "5 Reasons We're the Best Vein Doctors in {city}, {state}". Each reason should be 2-3 sentences.
    The 5 reasons MUST be:
-   a) "ABVLM Certification" — Hand-picked ABVLM-certified experts. American Board of Venous and Lymphatic Medicine certifies top 1% vein doctors. Most effective vein care standards.
+   a) "Board Certification" — Hand-picked board-certified vein experts. Our doctors hold certifications from prestigious medical boards, ensuring the highest vein care standards.
    b) "Vascular Imaging Training" — Registered physicians in vascular imaging. Can identify and treat root cause of spider veins and varicose veins, not just visible symptoms. Long-lasting results with negligible recurrence risk.
    c) "Personalized Vein Care" — Believe in personalized vein care. Discuss symptoms and goals, examine leg veins, run advanced diagnostic tests. Highlight all treatment options with pros and cons.
    d) "Minimally Invasive Treatments" — Only minimally invasive treatments (radiofrequency ablation, sclerotherapy, ClariVein). Under local anesthesia, 30 minutes, no downtime or major complications. Resume activities immediately.
-   e) "No Surprise Billing" — Strict "no surprise billing" policy. Complete cost overview before procedure. Accept all major insurance plans including Medicare. Help maximize coverage.
+   e) "No Surprise Billing" — Strict "no surprise billing" policy. Complete cost overview before procedure. Accept all major insurance plans including most major providers. Help maximize coverage.
 
    Localize each reason by mentioning {city} or {hood} naturally. Don't just copy — rephrase naturally while keeping the key points.
 
@@ -1088,7 +1094,7 @@ Return ONLY valid JSON. No markdown."""
     except Exception:
         return {
             "five_reasons": [
-                {"title": "ABVLM Certification", "description": f"The vein doctors at our vein clinics in {city} are hand-picked amongst the country's leading ABVLM-certified experts."},
+                {"title": "Board Certification", "description": f"The vein doctors at our vein clinics in {city} are hand-picked amongst the country's leading board-certified vein experts."},
                 {"title": "Vascular Imaging Training", "description": f"Our vein doctors in {city} are registered physicians in vascular imaging, making them uniquely capable of identifying and treating root causes."},
                 {"title": "Personalized Vein Care", "description": f"Our vein clinics in {state} believe in personalized vein care tailored to your specific needs."},
                 {"title": "Minimally Invasive Treatments", "description": f"Our vein doctors in {city} only provide minimally invasive vein treatments, performed under local anesthesia within 30 minutes."},
@@ -1108,7 +1114,7 @@ Return ONLY valid JSON. No markdown."""
                 {"neighborhood": "Nearby Area 2", "direction": "Head south on Highway 1."},
             ],
             "meta_title": f"Best Vein Clinic in {city}, {state} | Vein Clinics",
-            "meta_description": f"Top-rated vein clinic in {city}, {state}. ABVLM-certified doctors, minimally invasive treatments, no surprise billing. Book today.",
+            "meta_description": f"Top-rated vein clinic in {city}, {state}. Board-certified doctors, minimally invasive treatments, no surprise billing. Book today.",
         }
 
 
@@ -1193,8 +1199,8 @@ Return a JSON object with:
 1. "intro_paragraphs": Array of exactly 4 strings (paragraphs). Section title is "Spider and Varicose Vein Center: Do you have spider veins or varicose veins? Consult our board-certified vein doctors in {hood}."
    - Paragraph 1: Open with questions about symptoms (spider veins, varicose veins, restless leg syndrome, leg swelling, muscle cramps, leg heaviness, leg fatigue, throbbing leg veins). Mention symptoms escalate at night or after inactivity. Urge consulting board-certified vein doctors in {hood}.
    - Paragraph 2: Explain chronic venous insufficiency (CVI) — affects 30% of Americans, initial signs benign but escalates to leg ulcers, deep vein thrombosis, skin disorders. Treating spider veins without addressing underlying disease is pointless.
-   - Paragraph 3: The vein center is led by board-certified doctors focused on long-lasting relief. They identify and treat underlying venous insufficiency using advanced duplex ultrasound. Minimally invasive treatments. Perfect track records.
-   - Paragraph 4: Doctors have highest skills, specialize in vascular imaging, ABVLM certified. Encourage scheduling an appointment.
+   - Paragraph 3: The vein center is led by board-certified doctors focused on long-lasting relief. They identify and treat underlying venous insufficiency using advanced duplex ultrasound. Minimally invasive treatments. Excellent track records.
+   - Paragraph 4: Doctors have highest skills, specialize in vascular imaging, board-certified. Encourage scheduling an appointment.
 
 2. "treatments": Array of exactly 4 objects with "name" and "description":
    - Endovenous Ablation: Thermal energy or laser to destroy unhealthy veins responsible for spider and varicose veins
@@ -1204,17 +1210,17 @@ Return a JSON object with:
    Then add a closing sentence: each treatment has unique pros, cons, and purposes. Doctors recommend ideal treatment based on symptoms, goals, medical history, insurance, and vein size/shape.
 
 3. "eight_reasons": Array of exactly 8 strings. "8 Reasons to Choose Our Vein Centers in {region}":
-   1. Board-certified and Harvard-trained vein specialists
+   1. Board-certified and Ivy League-trained vein specialists
    2. Only minimally invasive treatments for all vein conditions
    3. Advanced vascular imaging tests to treat root cause
-   4. IAC-accredited vein centers with cutting-edge technology
-   5. Perfect track record and 5-star ratings
+   4. Modern vein centers with advanced diagnostic technology
+   5. Excellent track record with consistently high patient ratings
    6. "No surprise billing" policy with complete cost transparency
-   7. Accept all major insurance plans including Medicare
+   7. Accept all major insurance plans including most major providers
    8. Conveniently located in {city}
    Localize and rephrase naturally.
 
-4. "meet_doctors_paragraph": One paragraph about the board-certified vein doctors. Mention: Ivy league-trained, passed rigorous tests, ABVLM recognition (gold standard), specialize in vascular imaging and minimally invasive treatments, uniquely capable of addressing root cause.
+4. "meet_doctors_paragraph": One paragraph about the board-certified vein doctors. Mention: Ivy League-trained, passed rigorous tests, board certifications from prestigious medical boards, specialize in vascular imaging and minimally invasive treatments, uniquely capable of addressing root cause.
 
 5. "directions_intro": 2-3 sentences introducing the clinic location with full address. Mention nearby landmarks or transit. Style: "Our vein center in {hood} couldn't be more accessible. It's located at {address}..."
 
@@ -1245,7 +1251,7 @@ Return ONLY valid JSON. No markdown."""
                 f"Do you have spider veins or varicose veins? Are your vein problems accompanied by restless leg syndrome, leg swelling, or leg heaviness? If so, you may have underlying vein disease, and you should consult our board-certified vein doctors in {hood} as soon as possible.",
                 f"Chronic venous insufficiency is a common condition that affects over 30% of Americans. If left untreated, vein disease leads to escalating symptoms including leg ulcers, deep vein thrombosis, and skin disorders.",
                 f"Spider Vein and Varicose Vein Center, {hood}, is led by board-certified vein doctors focused on long-lasting relief. They identify and treat the underlying venous insufficiency using advanced duplex ultrasound tests.",
-                f"Our vein doctors have the highest levels of skills and experience. Their vein care skills are confirmed by their ABVLM certification. Schedule an appointment at our vein center in {hood} to discuss your treatment options.",
+                f"Our vein doctors have the highest levels of skills and experience. Their vein care skills are confirmed by their board certifications from prestigious medical boards. Schedule an appointment at our vein center in {hood} to discuss your treatment options.",
             ],
             "treatments": [
                 {"name": "Endovenous Ablation", "description": "Thermal energy or laser energy is used to destroy the unhealthy veins responsible for spider veins and varicose veins."},
@@ -1254,23 +1260,23 @@ Return ONLY valid JSON. No markdown."""
                 {"name": "Phlebectomy", "description": "The unhealthy and bulging veins are extracted from the body via small incisions."},
             ],
             "eight_reasons": [
-                f"Your vein treatment is handled by board-certified and Harvard-trained vein specialists.",
+                f"Your vein treatment is handled by board-certified and Ivy League-trained vein specialists.",
                 "We only provide minimally invasive vein treatments for all vein conditions.",
                 "We use advanced vascular imaging tests to treat the root cause of your vein problems.",
-                f"Our IAC-accredited vein centers in {state} use cutting-edge technology.",
-                "We maintain a perfect track record and 5-star ratings from all patients.",
+                f"Our modern vein centers in {state} use advanced diagnostic technology.",
+                "We maintain an excellent track record with consistently high patient satisfaction ratings.",
                 'Our "no surprise billing" policy guarantees complete transparency with costs.',
-                "We accept all major insurance plans, including Medicare.",
+                "We accept all major insurance plans, including most major providers.",
                 f"Our vein centers in {region} are conveniently located in {city}.",
             ],
-            "meet_doctors_paragraph": f"Our spider vein and varicose vein center in {hood} is led by Ivy league-trained doctors. Our vein doctors have passed numerous rigorous tests and professional milestones to receive formal recognition from the American Board of Venous and Lymphatic Medicine (ABVLM), a gold standard that most vein doctors aspire to. Furthermore, they specialize in the latest vascular imaging techniques and minimally invasive vein treatments, making them uniquely capable of addressing the root cause of your vein problems.",
+            "meet_doctors_paragraph": f"Our spider vein and varicose vein center in {hood} is led by Ivy League-trained doctors. Our vein doctors have passed numerous rigorous tests and professional milestones to receive board certifications from prestigious medical boards. Furthermore, they specialize in the latest vascular imaging techniques and minimally invasive vein treatments, making them uniquely capable of addressing the root cause of your vein problems.",
             "directions_intro": f"Our vein center in {hood} is located at {address}, conveniently accessible for patients throughout the area.",
             "neighborhood_directions": [
                 {"neighborhood": "Nearby Area 1", "direction": "Take Main St toward the clinic."},
                 {"neighborhood": "Nearby Area 2", "direction": "Head south on the highway."},
             ],
             "meta_title": f"Best Vein Center in {city}, {state} | Vein Centers",
-            "meta_description": f"Top-rated vein center in {city}, {state}. Board-certified, Harvard-trained specialists. IAC accredited. No surprise billing. Book today.",
+            "meta_description": f"Top-rated vein center in {city}, {state}. Board-certified, Ivy League-trained specialists. No surprise billing. Book today.",
         }
 
 
