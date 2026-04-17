@@ -235,9 +235,7 @@ def build_content_vtc(brand: dict, address: str, page_type: str, ctx: dict, doct
         landmarks_list = "\n".join(f"- {lm}" for lm in landmarks)
         landmarks_sec = f"\n## Landmarks Nearby\n\n{landmarks_list}\n"
 
-    content = f"""## Spider & varicose vein treatment in
-
-# {hood}, {state}{coming_soon_label}
+    content = f"""# Spider & varicose vein treatment in<br>{hood}, {state}{coming_soon_label}
 
 {address}
 
