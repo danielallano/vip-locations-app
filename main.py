@@ -251,6 +251,84 @@ def build_content_vtc(brand: dict, address: str, page_type: str, ctx: dict, doct
     return content, meta_title, meta_description
 
 
+def _generate_veintreatment_content(address: str, hood: str, city: str, state: str, city_state: str, page_type: str, doctor_name: Optional[str] = None) -> dict:
+    """
+    AI-generate veintreatment.com content — one long SEO-rich paragraph.
+    """
+    coming_soon_note = "\nThe clinic is NOT yet open (Coming Soon). Use future tense — 'preparing to open', 'will offer', etc. Still include all keywords and address." if page_type == "coming_soon" else ""
+    doctor_note = f"\nThe doctor at this location is {doctor_name}. Mention them naturally." if doctor_name else ""
+
+    prompt = f"""You are an SEO-focused medical marketing copywriter for veintreatment.com.
+
+Generate content for this location:
+- Address: {address}
+- Neighborhood: {hood}
+- City: {city}, {state}
+{coming_soon_note}{doctor_note}
+
+Return a JSON object with:
+
+1. "paragraph": One long, SEO-rich paragraph (8-12 sentences). This is the main content block. Must include:
+   - Keywords naturally woven in: "spider veins", "varicose veins", "leg discomfort", "vein specialists", "board-certified", "chronic venous insufficiency (CVI)", "minimally invasive", "vein treatment"
+   - The full address repeated naturally in the text
+   - Symptoms: leg pain, heaviness, swelling, restless legs, visible veins
+   - Mention of technology: duplex ultrasound, vein mapping
+   - Custom treatment plans
+   - Welcoming and professional tone
+   
+   Style reference: "If you're struggling with spider veins, varicose veins, or leg discomfort, our team of board-certified vein specialists in [location] is here to help. Visit us at [address] for a personalized evaluation and modern, minimally invasive vein care. Do you often notice leg pain, heaviness, swelling, or restless legs, especially after long hours of standing or sitting? These symptoms may be signs of chronic venous insufficiency (CVI). A common vein condition that affects circulation and can lead to visible veins or more serious complications if left untreated. At our [location] vein clinic, we use state-of-the-art duplex ultrasound technology to map your leg veins and pinpoint the exact cause of your symptoms. Our doctors then create a custom treatment plan designed to improve both your vein health and comfort."
+
+2. "meta_title": SEO title, 50-60 chars max. Include "vein treatment" + city/location.
+
+3. "meta_description": SEO description, 150-160 chars max. Include keywords, location, and CTA.
+
+Return ONLY valid JSON. No markdown."""
+
+    try:
+        resp = oai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.6,
+            max_tokens=700,
+        )
+        raw = resp.choices[0].message.content.strip()
+        raw = re.sub(r'^```json\s*', '', raw)
+        raw = re.sub(r'\s*```$', '', raw)
+        return json.loads(raw)
+    except Exception:
+        return {
+            "paragraph": f"If you're struggling with spider veins, varicose veins, or leg discomfort, our team of board-certified vein specialists in {hood} is here to help. Visit us at {address} for a personalized evaluation and modern, minimally invasive vein care.",
+            "meta_title": f"Vein Treatment in {hood}, {state} | veintreatment.com",
+            "meta_description": f"Board-certified vein specialists in {hood}, {city_state}. Minimally invasive treatment for spider veins & varicose veins. Book today.",
+        }
+
+
+def build_content_veintreatment(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None) -> tuple[str, str, str]:
+    """Build veintreatment.com content — H1 + address + long SEO paragraph."""
+    hood = ctx["neighborhood_name"]
+    city = ctx["city"]
+    state = ctx["state"]
+    city_state = ctx["city_state"]
+
+    ai = _generate_veintreatment_content(address, hood, city, state, city_state, page_type, doctor_name)
+
+    paragraph = ai.get("paragraph", "")
+    meta_title = ai.get("meta_title", f"Vein Treatment in {hood} | veintreatment.com")
+    meta_description = ai.get("meta_description", f"Vein specialists in {hood}, {city_state}. Book today.")
+
+    coming_soon_label = " (Coming soon!)" if page_type == "coming_soon" else ""
+
+    content = f"""# {hood}{coming_soon_label}
+
+{address}
+
+---
+
+{paragraph}"""
+
+    return content, meta_title, meta_description
+
+
 def _generate_vip_content(address: str, hood: str, city: str, state: str, city_state: str, page_type: str, clinic_type: str = "vein", doctor_name: Optional[str] = None) -> dict:
     """
     AI-generate VIP Medical Group location content:
@@ -1073,8 +1151,10 @@ def generate_content_for_brand(brand_id: str, address: str, page_type: str, doct
 
     brand_type = brand.get("type", "main")
 
-    if brand_id == "vtc" or brand_id == "veintreatment":
+    if brand_id == "vtc":
         content, meta_title, meta_desc = build_content_vtc(brand, address, page_type, ctx, doctor_name)
+    elif brand_id == "veintreatment":
+        content, meta_title, meta_desc = build_content_veintreatment(brand, address, page_type, ctx, doctor_name)
     elif brand_id == "vip":
         content, meta_title, meta_desc = build_content_vip(brand, address, page_type, ctx, doctor_name, clinic_type)
     elif brand_id == "pts":
