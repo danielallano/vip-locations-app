@@ -196,6 +196,18 @@
             </div>
           </div>
 
+          <!-- Clinic type -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">🩸 Clinic Type</label>
+            <div class="btn-group w-100 type-toggle" role="group">
+              <input type="radio" class="btn-check" name="clinicType" id="clinicVein" value="vein" checked />
+              <label class="btn btn-outline-info" for="clinicVein">🩸 Vein Only</label>
+              <input type="radio" class="btn-check" name="clinicType" id="clinicVeinPain" value="vein_pain" />
+              <label class="btn btn-outline-info" for="clinicVeinPain">🩸💊 Vein & Pain</label>
+            </div>
+            <div class="form-text">Affects keyword selection for VIP and multi-specialty brands</div>
+          </div>
+
           <!-- Brand selection -->
           <div class="mb-3">
             <div class="d-flex align-items-center justify-content-between mb-1">
@@ -416,7 +428,8 @@ async function generateContent() {
   resultsArea.innerHTML = '';
 
   try {
-    const body = { address, brand_ids: brandIds, page_type: pageType };
+    const clinicType = document.querySelector('input[name="clinicType"]:checked').value;
+    const body = { address, brand_ids: brandIds, page_type: pageType, clinic_type: clinicType };
     if (doctorName) body.doctor_name = doctorName;
 
     const resp = await fetch(BASE_URL + 'api/generate', {

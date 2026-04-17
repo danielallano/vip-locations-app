@@ -36,6 +36,7 @@ class GenerateRequest(BaseModel):
     brand_ids: List[str]
     page_type: str  # "open" | "coming_soon"
     doctor_name: Optional[str] = None
+    clinic_type: Optional[str] = "vein"  # "vein" | "vein_pain"
 
 
 class BrandContent(BaseModel):
@@ -286,7 +287,7 @@ Ready to get started? Our {hood} clinic is accepting new patients.
     return content, meta_title, meta_desc
 
 
-def build_content_vip(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None) -> tuple[str, str, str]:
+def build_content_vip(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None, clinic_type: Optional[str] = "vein") -> tuple[str, str, str]:
     """Build VIP Medical Group content (vein + pain)."""
     hood = ctx["neighborhood_name"]
     city = ctx["city"]
@@ -1116,11 +1117,19 @@ def build_content_regional(brand: dict, address: str, page_type: str, ctx: dict,
     return content, meta_title, meta_desc
 
 
-def generate_content_for_brand(brand_id: str, address: str, page_type: str, doctor_name: Optional[str] = None) -> BrandContent:
+def generate_content_for_brand(brand_id: str, address: str, page_type: str, doctor_name: Optional[str] = None, clinic_type: Optional[str] = "vein") -> BrandContent:
     """Generate content for a single brand."""
     brand = get_brand(brand_id)
     if not brand:
         raise ValueError(f"Unknown brand: {brand_id}")
+
+    # Override brand specialty based on clinic_type selection
+    if clinic_type == "vein_pain" and brand.get("specialty") in ("vein", "vein_pain"):
+        brand = {**brand, "specialty": "vein_pain"}
+    elif clinic_type == "vein" and brand_id != "pts":
+        # Keep vein-only unless it's PTS (always pain)
+        if brand.get("specialty") == "vein_pain":
+            brand = {**brand, "specialty": "vein"}
 
     language = brand.get("language", "en")
     ctx = get_location_context(address, brand, page_type, language)
@@ -1130,7 +1139,7 @@ def generate_content_for_brand(brand_id: str, address: str, page_type: str, doct
     if brand_id == "vtc" or brand_id == "veintreatment":
         content, meta_title, meta_desc = build_content_vtc(brand, address, page_type, ctx, doctor_name)
     elif brand_id == "vip":
-        content, meta_title, meta_desc = build_content_vip(brand, address, page_type, ctx, doctor_name)
+        content, meta_title, meta_desc = build_content_vip(brand, address, page_type, ctx, doctor_name, clinic_type)
     elif brand_id == "pts":
         content, meta_title, meta_desc = build_content_pts(brand, address, page_type, ctx, doctor_name)
     elif brand_id == "venasvarices":
@@ -1359,7 +1368,7 @@ def api_generate(req: GenerateRequest):
 
     for brand_id in req.brand_ids:
         try:
-            result = generate_content_for_brand(brand_id, req.address, req.page_type, req.doctor_name)
+            result = generate_content_for_brand(brand_id, req.address, req.page_type, req.doctor_name, req.clinic_type)
             results.append(result)
         except Exception as e:
             errors.append(f"{brand_id}: {str(e)}")
