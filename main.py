@@ -287,144 +287,117 @@ Ready to get started? Our {hood} clinic is accepting new patients.
     return content, meta_title, meta_desc
 
 
+def _generate_vip_content(address: str, hood: str, city: str, state: str, city_state: str, page_type: str, clinic_type: str = "vein", doctor_name: Optional[str] = None) -> dict:
+    """
+    AI-generate VIP Medical Group location content:
+    - intro_paragraph: short intro with keywords
+    - directions_paragraph: transit for NYC, landmarks for others
+    - subway_lines: list of subway line numbers (NYC only, empty for others)
+    - landmarks: list of 3 nearby landmarks
+    - meta_title: 50-60 chars, optimized
+    - meta_description: 150-160 chars, optimized
+    """
+    is_nyc = state == "NY" and city.lower() in ("new york", "new york city", "nyc", "manhattan", "brooklyn", "queens", "bronx", "staten island")
+
+    specialty_desc = "specialized vein and pain care" if clinic_type == "vein_pain" else "specialized vein treatment"
+    kw_vein = "varicose veins, spider veins, vein treatment, sclerotherapy"
+    kw_pain = "back pain, neck pain, sciatica, pain management" if clinic_type == "vein_pain" else ""
+    keywords = f"{kw_vein}, {kw_pain}" if kw_pain else kw_vein
+
+    coming_soon_note = "\nThe clinic is NOT yet open (Coming Soon). Mention it opens soon and invite patients to call ahead." if page_type == "coming_soon" else ""
+    doctor_note = f"\nThe doctor at this location is {doctor_name}. Mention them naturally." if doctor_name else ""
+
+    subway_instruction = """
+- "subway_lines": Array of subway line numbers/letters serving this area (e.g. ["4", "5", "6", "7", "S"]). Be accurate for the actual location.
+""" if is_nyc else """
+- "subway_lines": Empty array [] (not in NYC)
+"""
+
+    prompt = f"""You are a medical marketing copywriter for VIP Medical Group.
+
+Generate content for this location:
+- Address: {address}
+- Neighborhood: {hood}
+- City: {city}, {state}
+- Clinic type: {specialty_desc}
+{coming_soon_note}{doctor_note}
+
+Return a JSON object with:
+
+1. "intro_paragraph": One short paragraph (2-3 sentences) introducing the clinic. Mention the location naturally and include relevant keywords ({keywords}). Professional, welcoming tone. Style: "Our {hood} clinic is centrally located on [street], offering convenient access for patients seeking {specialty_desc} in the heart of {city}."
+
+2. "directions_paragraph": A detailed paragraph (4-6 sentences) about how to get to the clinic. Include the full address. {'For NYC locations: mention specific subway lines, train stations, bus routes, and walking directions from major transit hubs. Be very specific about which trains stop nearby.' if is_nyc else 'Mention major roads, highways, nearby landmarks, and parking availability. Be specific to the actual area.'} End with a sentence about the facility being modern and comfortable.
+
+3. "landmarks": Array of exactly 3 nearby landmarks (real places near the address). Just the names, e.g. ["Grand Central", "Bryant Park", "Cava Restaurant"]
+{subway_instruction}
+4. "meta_title": SEO title tag, 50-60 chars max. Include primary keyword + city. Format: "Vein Treatment in [Location] | VIP Medical Group" or "Vein & Pain Clinic in [Location] | VIP Medical Group"
+
+5. "meta_description": SEO description, 150-160 chars max. Include keywords, city, and CTA ("Book today", "Schedule now", etc.)
+
+Return ONLY valid JSON. No markdown."""
+
+    try:
+        resp = oai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.5,
+            max_tokens=700,
+        )
+        raw = resp.choices[0].message.content.strip()
+        raw = re.sub(r'^```json\s*', '', raw)
+        raw = re.sub(r'\s*```$', '', raw)
+        return json.loads(raw)
+    except Exception:
+        return {
+            "intro_paragraph": f"Our {hood} clinic offers convenient access for patients seeking {specialty_desc} in {city_state}.",
+            "directions_paragraph": f"Located at {address}, our clinic is easily accessible for patients throughout {city} and the surrounding area.",
+            "subway_lines": [],
+            "landmarks": ["Nearby landmark 1", "Nearby landmark 2", "Nearby landmark 3"],
+            "meta_title": f"Vein Treatment in {hood} | VIP Medical Group",
+            "meta_description": f"Expert vein treatment in {hood}, {city_state}. Minimally invasive care by board-certified specialists. Book today.",
+        }
+
+
 def build_content_vip(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None, clinic_type: Optional[str] = "vein") -> tuple[str, str, str]:
-    """Build VIP Medical Group content (vein + pain)."""
+    """Build VIP Medical Group content — H1 + address + intro + directions + subway/landmarks."""
     hood = ctx["neighborhood_name"]
     city = ctx["city"]
+    state = ctx["state"]
     city_state = ctx["city_state"]
-    neighborhoods = "\n".join(f"- {n}" for n in ctx["neighborhoods_list"])
-    directions = ctx["directions_paragraph"]
-    local_phrase = ctx["local_phrase"]
-    page_title_loc = ctx["page_title_location"]
-    phone = brand["phone"]
-    treatments_list = "\n".join(f"- {t}" for t in brand["treatments"])
-    conditions_list = "\n".join(f"- {c}" for c in brand["conditions"])
-    trust_list = "\n".join(f"- {t}" for t in brand["trust_points"])
-    doctor_sec = _doctor_section(doctor_name, hood, "VIP Medical Group")
 
-    if page_type == "coming_soon":
-        content = f"""# Vein & Pain Treatment in {page_title_loc}
+    ai = _generate_vip_content(address, hood, city, state, city_state, page_type, clinic_type, doctor_name)
 
-**Address:** {address}
+    intro = ai.get("intro_paragraph", "")
+    directions = ai.get("directions_paragraph", "")
+    subway_lines = ai.get("subway_lines", [])
+    landmarks = ai.get("landmarks", [])
+    meta_title = ai.get("meta_title", f"Vein Treatment in {hood} | VIP Medical Group")
+    meta_description = ai.get("meta_description", f"Expert vein treatment in {hood}, {city_state}. Book today.")
 
-VIP Medical Group is preparing to open a new clinic in {hood}, {city_state}, bringing comprehensive vein and pain care to patients in the area. This location will offer minimally invasive treatments for varicose veins, spider veins, and chronic pain conditions.
+    coming_soon_label = " — Coming Soon" if page_type == "coming_soon" else ""
 
-📞 **Call us to learn more or book in advance:** {phone}
+    # Build subway section (NYC only)
+    subway_sec = ""
+    if subway_lines:
+        lines_str = ", ".join(subway_lines)
+        subway_sec = f"\n## Subway Services\n\n{lines_str}\n"
 
----
+    # Build landmarks section
+    landmarks_sec = ""
+    if landmarks:
+        landmarks_list = "\n".join(f"- {lm}" for lm in landmarks)
+        landmarks_sec = f"\n## Landmarks Nearby\n\n{landmarks_list}\n"
 
-## VIP Medical Group Coming to {hood}, {city}
+    content = f"""# {hood}{coming_soon_label}
 
-We're expanding to serve patients throughout {city_state}:
+{address}
 
-{neighborhoods}
-
----
-
-## Convenient Location {local_phrase}
-
-{directions}
-
-Transportation and parking details will be available when we open.
-
----
-
-## Our Services
-
-At our {hood} clinic, we provide:
-
-{treatments_list}
-
----
-
-## Conditions We Treat
-
-{conditions_list}
-
----
-
-## Why Choose VIP Medical Group
-
-{trust_list}
-{doctor_sec}
----
-
-## Need to Be Seen Sooner?
-
-Call us to learn more or book your appointment in advance at one of our existing locations.
-
-📞 **{phone}**
-
----
-
-## Meta Tags
-
-**Title:** Vein Clinic Opening in {hood} {city} | VIP Medical Group
-**Meta description:** New vein and pain clinic opening in {hood}, {city_state}. Convenient access for patients. Minimally invasive treatments by top specialists. Call {phone}.
-"""
-        meta_title = f"Vein Clinic Opening in {hood} {city} | VIP Medical Group"
-        meta_desc = f"New vein and pain clinic opening in {hood}, {city_state}. Minimally invasive treatments by Ivy League-trained specialists. Call {phone}."
-
-    else:
-        content = f"""# Vein & Pain Treatment in {page_title_loc}
-
-**Address:** {address}
-
-VIP Medical Group in {hood}, {city_state} offers comprehensive care for vein and pain conditions. Our clinic is conveniently located {local_phrase}, serving patients across {city} and the surrounding area.
-
-📞 **Call us or book an appointment:** {phone}
-
----
-
-## Your VIP Medical Group Clinic in {hood}, {city}
-
-We serve patients from:
-
-{neighborhoods}
-
----
-
-## Getting Here
+{intro}
 
 {directions}
+{subway_sec}{landmarks_sec}"""
 
----
-
-## Our Services
-
-{treatments_list}
-
----
-
-## Conditions We Treat
-
-{conditions_list}
-
----
-
-## Why Choose VIP Medical Group
-
-{trust_list}
-{doctor_sec}
----
-
-## Book Your Appointment
-
-Our {hood} clinic is now accepting new patients.
-
-📞 **{phone}**
-
----
-
-## Meta Tags
-
-**Title:** Vein Treatment in {hood}, {ctx['state']} | Best Vein & Pain Doctors
-**Meta description:** Vein & pain treatment in {hood}, {city_state}. Minimally invasive treatments at {address}. Book an appointment with our board-certified specialists today.
-"""
-        meta_title = f"Vein Treatment in {hood}, {ctx['state']} | Best Vein & Pain Doctors"
-        meta_desc = f"Vein & pain treatment in {hood}, {city_state}. Minimally invasive treatments at {address}. Book an appointment today."
-
-    return content, meta_title, meta_desc
+    return content, meta_title, meta_description
 
 
 def build_content_pts(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None) -> tuple[str, str, str]:
