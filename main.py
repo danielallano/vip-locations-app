@@ -667,142 +667,84 @@ def build_content_venasvarices(brand: dict, address: str, page_type: str, ctx: d
     return content, meta_title, meta_description
 
 
+def _generate_veindoctor_content(address: str, hood: str, city: str, state: str, city_state: str, page_type: str, doctor_name: Optional[str] = None) -> dict:
+    """
+    AI-generate veindoctor.com content — "find a doctor" angle with long SEO paragraph.
+    """
+    coming_soon_note = "\nThe clinic is NOT yet open (Coming Soon). Use future tense — 'will connect you with', 'preparing to open', etc. Still include all keywords and address." if page_type == "coming_soon" else ""
+    doctor_note = f"\nThe doctor at this location is {doctor_name}. Mention them by name as the specialist patients will see." if doctor_name else ""
+
+    prompt = f"""You are an SEO-focused medical marketing copywriter for veindoctor.com.
+
+The brand angle is "find a vein doctor" — people searching "vein doctor near me" land here. Content should be doctor/specialist-focused.
+
+Generate content for this location:
+- Address: {address}
+- Neighborhood: {hood}
+- City: {city}, {state}
+{coming_soon_note}{doctor_note}
+
+Return a JSON object with:
+
+1. "paragraph": One long, SEO-rich paragraph (8-12 sentences). Focus on the "find a doctor" angle. Must include:
+   - Keywords: "vein doctor", "vein specialist", "find a vein doctor near me", "board-certified", "varicose veins", "spider veins", "chronic venous insufficiency"
+   - The full address naturally in the text
+   - What to expect at the first visit (consultation, duplex ultrasound evaluation, personalized treatment plan)
+   - Doctor credentials (board-certified, Harvard-trained, fellowship-certified)
+   - Reassurance: minimally invasive, same-day procedures, insurance accepted, zero downtime
+   - Welcoming tone, patient-centered
+   
+   Style reference: "Looking for a trusted vein doctor in [location]? Our board-certified vein specialists at [address] provide expert diagnosis and minimally invasive treatment for varicose veins, spider veins, and chronic venous insufficiency. From your very first visit, you'll receive a comprehensive evaluation using advanced duplex ultrasound technology to map your veins and identify the root cause of your symptoms."
+
+2. "meta_title": SEO title, 50-60 chars max. Include "vein doctor" + location. Format: "Find a Vein Doctor in [Location] | Vein Doctor"
+
+3. "meta_description": SEO description, 150-160 chars max. Include "vein doctor", "vein specialist", location, and CTA.
+
+Return ONLY valid JSON. No markdown."""
+
+    try:
+        resp = oai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.6,
+            max_tokens=700,
+        )
+        raw = resp.choices[0].message.content.strip()
+        raw = re.sub(r'^```json\s*', '', raw)
+        raw = re.sub(r'\s*```$', '', raw)
+        return json.loads(raw)
+    except Exception:
+        return {
+            "paragraph": f"Looking for a trusted vein doctor in {hood}? Our board-certified vein specialists at {address} provide expert diagnosis and minimally invasive treatment for varicose veins, spider veins, and chronic venous insufficiency.",
+            "meta_title": f"Find a Vein Doctor in {hood}, {state} | Vein Doctor",
+            "meta_description": f"Board-certified vein doctor in {hood}, {city_state}. Expert diagnosis & minimally invasive treatment for varicose & spider veins. Book today.",
+        }
+
+
 def build_content_veindoctor(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None) -> tuple[str, str, str]:
-    """Build Vein Doctor content — similar to VTC but different URL structure (/{state}/{city}/)."""
+    """Build veindoctor.com content — 'find a doctor' angle with long SEO paragraph."""
     hood = ctx["neighborhood_name"]
     city = ctx["city"]
     state = ctx["state"]
     city_state = ctx["city_state"]
-    neighborhoods = "\n".join(f"- {n}" for n in ctx["neighborhoods_list"])
-    directions = ctx["directions_paragraph"]
-    local_phrase = ctx["local_phrase"]
-    page_title_loc = ctx["page_title_location"]
-    phone = brand["phone"]
-    treatments_list = "\n".join(f"- {t}" for t in brand["treatments"])
-    conditions_list = "\n".join(f"- {c}" for c in brand["conditions"])
-    trust_list = "\n".join(f"- {t}" for t in brand["trust_points"])
-    doctor_sec = _doctor_section(doctor_name, hood, "Vein Doctor")
 
-    city_slug = city.lower().replace(" ", "-")
-    state_slug = state.lower()
-    url_path = f"/{state_slug}/{city_slug}/"
+    ai = _generate_veindoctor_content(address, hood, city, state, city_state, page_type, doctor_name)
 
-    if page_type == "coming_soon":
-        content = f"""# Find a Vein Doctor in {page_title_loc}
+    paragraph = ai.get("paragraph", "")
+    meta_title = ai.get("meta_title", f"Find a Vein Doctor in {hood} | Vein Doctor")
+    meta_description = ai.get("meta_description", f"Vein doctor in {hood}, {city_state}. Book today.")
 
-**Address:** {address}
-**Page URL:** veindoctor.com{url_path}
+    coming_soon_label = " (Coming soon!)" if page_type == "coming_soon" else ""
 
-Vein Doctor is bringing expert vein care to {hood}, {city_state}. Our new clinic will connect you with board-certified vein specialists offering minimally invasive treatments for varicose veins, spider veins, and venous insufficiency.
+    content = f"""# Find a Vein Doctor in<br>{hood}, {state}{coming_soon_label}
 
-📞 **Call us to learn more or book in advance:** {phone}
+{address}
 
 ---
 
-## Your Vein Doctor in {hood}, {city}
+{paragraph}"""
 
-Our new {hood} location will provide convenient access for patients from:
-
-{neighborhoods}
-
----
-
-## Location
-
-{directions}
-
----
-
-## Treatments Available
-
-{treatments_list}
-
----
-
-## Conditions We Treat
-
-{conditions_list}
-
----
-
-## Why Choose Vein Doctor
-
-{trust_list}
-{doctor_sec}
----
-
-## Opening Soon
-
-📞 **{phone}**
-
----
-
-## Meta Tags
-
-**Title:** Vein Doctor in {hood} {city} | Coming Soon
-**Meta description:** Find a vein doctor in {hood}, {city_state}. Coming soon — minimally invasive vein treatments by board-certified specialists. Call {phone}.
-"""
-        meta_title = f"Vein Doctor in {hood} {city} | Coming Soon"
-        meta_desc = f"Find a vein doctor in {hood}, {city_state}. Coming soon — minimally invasive vein treatments by board-certified specialists. Call {phone}."
-    else:
-        content = f"""# Find a Vein Doctor in {page_title_loc}
-
-**Address:** {address}
-**Page URL:** veindoctor.com{url_path}
-
-Looking for a vein doctor in {hood}, {city_state}? Our clinic {local_phrase} offers expert, minimally invasive care for varicose veins, spider veins, and venous insufficiency from board-certified vein specialists.
-
-📞 **Call us or book your appointment:** {phone}
-
----
-
-## Your Vein Doctor in {hood}, {city}
-
-We serve patients from:
-
-{neighborhoods}
-
----
-
-## Getting Here
-
-{directions}
-
----
-
-## Treatments Available
-
-{treatments_list}
-
----
-
-## Conditions We Treat
-
-{conditions_list}
-
----
-
-## Why Choose Vein Doctor
-
-{trust_list}
-{doctor_sec}
----
-
-## Book Your Appointment
-
-📞 **{phone}**
-
----
-
-## Meta Tags
-
-**Title:** Vein Doctor in {hood}, {state} | Expert Vein Treatment
-**Meta description:** Find a top vein doctor in {hood}, {city_state}. Minimally invasive treatments for varicose and spider veins. Board-certified specialists. Book today.
-"""
-        meta_title = f"Vein Doctor in {hood}, {state} | Expert Vein Treatment"
-        meta_desc = f"Find a top vein doctor in {hood}, {city_state}. Minimally invasive treatments for varicose and spider veins. Board-certified specialists. Book today."
-
-    return content, meta_title, meta_desc
+    return content, meta_title, meta_description
 
 
 def build_content_legulcercenter(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None) -> tuple[str, str, str]:
