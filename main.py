@@ -953,6 +953,100 @@ No. Most of the healthcare professionals we work with don't need a referral from
     return content, meta_title, meta_desc
 
 
+def _generate_regional_veintreatment_content(address: str, hood: str, city: str, state: str, city_state: str, page_type: str, phone: str, doctor_name: Optional[str] = None) -> dict:
+    """
+    AI-generate regional veintreatment[xx].com content:
+    - Three paragraphs for the 'Why Choose' section
+    - Optimized meta tags
+    """
+    coming_soon_note = "\nThe clinic is NOT yet open (Coming Soon). Use future tense throughout." if page_type == "coming_soon" else ""
+    doctor_note = f"\nThe doctor at this location is {doctor_name}. Mention them naturally." if doctor_name else ""
+
+    prompt = f"""You are an SEO-focused medical marketing copywriter for a regional vein treatment clinic website.
+
+Generate content for this location:
+- Address: {address}
+- Neighborhood/City: {hood}
+- City: {city}, {state}
+- Phone: {phone}
+{coming_soon_note}{doctor_note}
+
+Return a JSON object with:
+
+1. "paragraph_1": First paragraph (3-4 sentences). Topic: Symptom awareness. Mention that residents of {city}, {state} may not realize they should visit a vein treatment clinic when they first notice symptoms like restless leg syndrome, throbbing leg veins, frequent leg cramps, leg pain, and leg swelling. These symptoms may indicate vein disease and can worsen over time if untreated.
+
+2. "paragraph_2": Second paragraph (3-4 sentences). Topic: What happens at consultation. At {hood} Vein Treatment Clinic, our skilled and nationally-renowned vein doctors take time to understand concerns, develop personalized treatment plans. During consultation: examine leg veins, discuss symptoms, review medical history, determine if underlying chronic venous insufficiency. Create treatment plan with minimally invasive procedures: radiofrequency ablation, VenaSeal, sclerotherapy.
+
+3. "paragraph_3": Third paragraph (2-3 sentences). Topic: Quick treatment + CTA. Vein treatments in {hood} typically conclude within an hour, involve no downtime, return to daily activities and work immediately. Don't let vein disease progress. Contact us today to schedule consultation and take first step towards healthier legs.
+
+4. "meta_title": SEO title, 50-60 chars max. Include "vein treatment" + city. Example: "Vein Treatment in {hood}, {state} | [Brand]"
+
+5. "meta_description": SEO description, 150-160 chars max. Include keywords, location, and CTA.
+
+Return ONLY valid JSON. No markdown."""
+
+    try:
+        resp = oai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.5,
+            max_tokens=700,
+        )
+        raw = resp.choices[0].message.content.strip()
+        raw = re.sub(r'^```json\s*', '', raw)
+        raw = re.sub(r'\s*```$', '', raw)
+        return json.loads(raw)
+    except Exception:
+        return {
+            "paragraph_1": f"Many residents of {city}, {state}, may not realize that visiting a vein treatment clinic should be a priority when they first notice symptoms such as restless leg syndrome, throbbing leg veins, frequent leg cramps, leg pain, and leg swelling. These symptoms may indicate vein disease, and if left untreated, they may worsen over time.",
+            "paragraph_2": f"At {hood} Vein Treatment Clinic, our highly skilled vein doctors take the time to understand your concerns and develop personalized treatment plans. During your consultation, our doctors will carefully examine your leg veins, discuss your symptoms, review your medical history, and determine if you have underlying chronic venous insufficiency.",
+            "paragraph_3": f"Our vein treatments in {hood} typically conclude within an hour and involve no downtime, so you can return to your daily activities and work immediately. Don't let vein disease progress and worsen. Contact us today to schedule your consultation.",
+            "meta_title": f"Vein Treatment in {hood}, {state}",
+            "meta_description": f"Expert vein treatment in {hood}, {city_state}. Minimally invasive procedures for varicose & spider veins. Schedule your consultation today.",
+        }
+
+
+def build_content_regional_veintreatment(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None) -> tuple[str, str, str]:
+    """Build regional veintreatment[xx].com content — location header + 'Why Choose' section with 3 paragraphs."""
+    hood = ctx["neighborhood_name"]
+    city = ctx["city"]
+    state = ctx["state"]
+    city_state = ctx["city_state"]
+    phone = brand["phone"]
+
+    ai = _generate_regional_veintreatment_content(address, hood, city, state, city_state, page_type, phone, doctor_name)
+
+    p1 = ai.get("paragraph_1", "")
+    p2 = ai.get("paragraph_2", "")
+    p3 = ai.get("paragraph_3", "")
+    meta_title = ai.get("meta_title", f"Vein Treatment in {hood}, {state}")
+    meta_description = ai.get("meta_description", f"Vein treatment in {hood}, {city_state}. Book today.")
+
+    coming_soon_label = " (Coming soon!)" if page_type == "coming_soon" else ""
+
+    content = f"""# Vein Treatment in {hood}, {state}{coming_soon_label}
+
+---
+
+**{hood}, {state}**
+
+{address}
+
+{phone}
+
+Start your journey to healthier legs today!
+
+## Why Choose Our Vein Clinic in {hood}?
+
+{p1}
+
+{p2}
+
+{p3}"""
+
+    return content, meta_title, meta_description
+
+
 def build_content_regional(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None) -> tuple[str, str, str]:
     """Build regional site content (shorter template)."""
     brand_name = brand["name"]
@@ -1107,6 +1201,8 @@ def generate_content_for_brand(brand_id: str, address: str, page_type: str, doct
         content, meta_title, meta_desc = build_content_veindoctor(brand, address, page_type, ctx, doctor_name)
     elif brand_id == "legulcercenter":
         content, meta_title, meta_desc = build_content_legulcercenter(brand, address, page_type, ctx, doctor_name)
+    elif brand_id.startswith("veintreatment") and brand_id != "veintreatment" and brand_type == "regional":
+        content, meta_title, meta_desc = build_content_regional_veintreatment(brand, address, page_type, ctx, doctor_name)
     elif brand_type in ("regional", "other"):
         content, meta_title, meta_desc = build_content_regional(brand, address, page_type, ctx, doctor_name)
     else:
