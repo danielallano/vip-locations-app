@@ -640,7 +640,9 @@ def build_content_venasvarices(brand: dict, address: str, page_type: str, ctx: d
     meta_title = ai.get("meta_title", f"Tratamiento de Varices en {hood} | Venas Varices")
     meta_description = ai.get("meta_description", f"Especialistas en varices en {hood}, {city_state}. Tratamientos mínimamente invasivos. Agende su cita.")
 
-    content = f"""# {hood}
+    coming_soon_label = " — Próximamente" if page_type == "coming_soon" else ""
+
+    content = f"""# {hood}{coming_soon_label}
 
 {address}
 
