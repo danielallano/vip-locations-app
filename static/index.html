@@ -179,10 +179,22 @@
 
           <!-- Doctor name (optional) -->
           <div class="mb-3">
-            <label class="form-label fw-semibold">👨‍⚕️ Doctor Name <span class="text-muted fw-normal">(optional)</span></label>
+            <label class="form-label fw-semibold">👨‍⚕️ Doctor Name <span class="text-muted fw-normal">(optional, required for PTS)</span></label>
             <input type="text" id="doctorInput" class="form-control"
-              placeholder="e.g. Dr. Sarah Chen (optional)" autocomplete="off" />
-            <div class="form-text">If provided, adds a "Meet Your Doctor" section</div>
+              placeholder="e.g. Dr. Sarah Chen" autocomplete="off" />
+            <div class="form-text">Adds a "Meet Your Doctor" section. Required for PTS.</div>
+          </div>
+
+          <!-- Doctor pronouns -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">🗣️ Doctor Pronouns <span class="text-muted fw-normal">(for PTS)</span></label>
+            <select id="pronounsInput" class="form-select">
+              <option value="" selected>Not specified</option>
+              <option value="he">He / Him / His</option>
+              <option value="she">She / Her / Her</option>
+              <option value="they">They / Them / Their</option>
+            </select>
+            <div class="form-text">Used for PTS "Meet our Team" content</div>
           </div>
 
           <!-- Page type -->
@@ -429,8 +441,10 @@ async function generateContent() {
 
   try {
     const clinicType = document.querySelector('input[name="clinicType"]:checked').value;
+    const doctorPronouns = document.getElementById('pronounsInput').value || null;
     const body = { address, brand_ids: brandIds, page_type: pageType, clinic_type: clinicType };
     if (doctorName) body.doctor_name = doctorName;
+    if (doctorPronouns) body.doctor_pronouns = doctorPronouns;
 
     const resp = await fetch(BASE_URL + 'api/generate', {
       method: 'POST',

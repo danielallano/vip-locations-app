@@ -36,6 +36,7 @@ class GenerateRequest(BaseModel):
     brand_ids: List[str]
     page_type: str  # "open" | "coming_soon"
     doctor_name: Optional[str] = None
+    doctor_pronouns: Optional[str] = None  # "he" | "she" | "they"
     clinic_type: Optional[str] = "vein"  # "vein" | "vein_pain"
 
 
@@ -442,135 +443,91 @@ def build_content_vip(brand: dict, address: str, page_type: str, ctx: dict, doct
     return content, meta_title, meta_description
 
 
-def build_content_pts(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None) -> tuple[str, str, str]:
-    """Build Pain Treatment Specialists content."""
+def _generate_pts_content(address: str, hood: str, city: str, state: str, city_state: str, doctor_name: str, pronouns: str = "they") -> dict:
+    """
+    AI-generate PTS "Meet our [City] Team" section — 3 paragraphs about the doctor.
+    Matches the live PTS page style.
+    """
+    # Build pronoun set
+    pronoun_map = {
+        "he": {"subject": "He", "object": "him", "possessive": "his", "reflexive": "himself"},
+        "she": {"subject": "She", "object": "her", "possessive": "her", "reflexive": "herself"},
+        "they": {"subject": "They", "object": "them", "possessive": "their", "reflexive": "themselves"},
+    }
+    p = pronoun_map.get(pronouns, pronoun_map["they"])
+
+    prompt = f"""You are a medical marketing copywriter for Pain Treatment Specialists (PTS).
+
+Generate the "Meet our Team" section for this pain clinic location.
+
+- Location: {hood}, {city}, {state}
+- Doctor: {doctor_name}
+- Pronouns: {p['subject']}/{p['object']}/{p['possessive']}
+- Clinic name: {hood} Pain Clinic
+
+Return a JSON object with:
+
+1. "paragraph_1": First paragraph (3-4 sentences). Introduce the doctor at the {hood} Pain Clinic. Mention that {doctor_name} specializes in interventional pain treatments, addressing acute, chronic, and medical pain without resorting to surgery or addictive narcotics. {doctor_name}'s focus is on providing accurate diagnoses and personalized treatment plans for various pain issues in a cutting-edge facility.
+
+2. "paragraph_2": Second paragraph (3-4 sentences). Say that {p['subject'].lower()} prioritizes comprehensive patient care, addressing not only the source of pain but also the holistic needs of {p['possessive'].lower()} patients. {doctor_name} is renowned for {p['possessive'].lower()} expertise, having trained at esteemed institutions and staying updated with the latest developments in pain management through active participation in national medical conferences.
+
+3. "paragraph_3": Third paragraph (3-4 sentences). Say that {doctor_name} creates tailored treatment strategies for all {p['possessive'].lower()} patients by attentively listening to their pain concerns and applying {p['possessive'].lower()} specialized knowledge of pain medicine. {p['possessive']} goal is to deliver effective and enduring pain relief, ensuring patients receive the highest standard of care at the {hood} Pain Clinic. Our clinic is dedicated to enhancing each patient's quality of life.
+
+4. "meta_title": SEO title, 50-60 chars max. Include "pain management" or "pain treatment" + city. Example: "Pain Management in {hood}, {state} | Pain Treatment Specialists"
+
+5. "meta_description": SEO description, 150-160 chars max. Include keywords, doctor name, and CTA.
+
+IMPORTANT: Use the correct pronouns ({p['subject']}/{p['object']}/{p['possessive']}) consistently throughout. The content should closely follow the structure described but feel natural, not templated.
+
+Return ONLY valid JSON. No markdown."""
+
+    try:
+        resp = oai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.5,
+            max_tokens=700,
+        )
+        raw = resp.choices[0].message.content.strip()
+        raw = re.sub(r'^```json\s*', '', raw)
+        raw = re.sub(r'\s*```$', '', raw)
+        return json.loads(raw)
+    except Exception:
+        return {
+            "paragraph_1": f"At the {hood} Pain Clinic, {doctor_name} specializes in interventional pain treatments, addressing acute, chronic, and medical pain without resorting to surgery or addictive narcotics. {doctor_name}'s focus is on providing accurate diagnoses and personalized treatment plans for various pain issues in a cutting-edge facility.",
+            "paragraph_2": f"{p['subject']} prioritizes comprehensive patient care, addressing not only the source of pain but also the holistic needs of {p['possessive'].lower()} patients. {doctor_name} is renowned for {p['possessive'].lower()} expertise, having trained at esteemed institutions and staying updated with the latest developments in pain management through active participation in national medical conferences.",
+            "paragraph_3": f"{doctor_name} creates tailored treatment strategies for all {p['possessive'].lower()} patients by attentively listening to their pain concerns and applying {p['possessive'].lower()} specialized knowledge of pain medicine. {p['possessive']} goal is to deliver effective and enduring pain relief, ensuring patients receive the highest standard of care at the {hood} Pain Clinic. Our clinic is dedicated to enhancing each patient's quality of life.",
+            "meta_title": f"Pain Management in {hood}, {state} | Pain Treatment Specialists",
+            "meta_description": f"Meet {doctor_name} at our {hood} pain clinic. Expert interventional pain treatment without surgery. Book your consultation today.",
+        }
+
+
+def build_content_pts(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None, doctor_pronouns: Optional[str] = None) -> tuple[str, str, str]:
+    """Build Pain Treatment Specialists content — 'Meet our [City] Team' section."""
     hood = ctx["neighborhood_name"]
     city = ctx["city"]
+    state = ctx["state"]
     city_state = ctx["city_state"]
-    neighborhoods = "\n".join(f"- {n}" for n in ctx["neighborhoods_list"])
-    directions = ctx["directions_paragraph"]
-    local_phrase = ctx["local_phrase"]
-    page_title_loc = ctx["page_title_location"]
-    phone = brand["phone"]
-    treatments_list = "\n".join(f"- {t}" for t in brand["treatments"])
-    conditions_list = "\n".join(f"- {c}" for c in brand["conditions"])
-    trust_list = "\n".join(f"- {t}" for t in brand["trust_points"])
-    doctor_sec = _doctor_section(doctor_name, hood, "Pain Treatment Specialists")
+    pronouns = doctor_pronouns or "they"
 
-    if page_type == "coming_soon":
-        content = f"""# Pain Management in {page_title_loc}
+    if not doctor_name:
+        # PTS requires a doctor name — return a placeholder
+        content = f"""# Meet our\n{hood} Team\n\n⚠️ Doctor name is required for PTS locations. Please provide the doctor's name and pronouns."""
+        meta_title = f"Pain Management in {hood}, {state} | Pain Treatment Specialists"
+        meta_desc = f"Expert pain management in {hood}, {city_state}. Pain Treatment Specialists. Book today."
+        return content, meta_title, meta_desc
 
-**Address:** {address}
+    ai = _generate_pts_content(address, hood, city, state, city_state, doctor_name, pronouns)
 
-Pain Treatment Specialists is expanding to {hood}, {city_state}. Our new clinic will offer non-surgical, minimally invasive pain management for patients suffering from back pain, sciatica, and other chronic pain conditions.
+    p1 = ai.get("paragraph_1", "")
+    p2 = ai.get("paragraph_2", "")
+    p3 = ai.get("paragraph_3", "")
+    meta_title = ai.get("meta_title", f"Pain Management in {hood}, {state} | Pain Treatment Specialists")
+    meta_desc = ai.get("meta_description", f"Meet {doctor_name} at our {hood} pain clinic. Expert pain treatment without surgery. Book today.")
 
-📞 **Call us to learn more or book in advance:** {phone}
+    coming_soon_label = " (Coming Soon)" if page_type == "coming_soon" else ""
 
----
-
-## Pain Treatment Specialists Coming to {hood}, {city}
-
-Serving patients from:
-
-{neighborhoods}
-
----
-
-## Location Details
-
-{directions}
-
----
-
-## Our Services
-
-{treatments_list}
-
----
-
-## Conditions We Treat
-
-{conditions_list}
-
----
-
-## Why Choose Pain Treatment Specialists
-
-{trust_list}
-{doctor_sec}
----
-
-## Book in Advance
-
-Our {hood} clinic is opening soon. Call now to get on the schedule.
-
-📞 **{phone}**
-
----
-
-## Meta Tags
-
-**Title:** Pain Management Clinic Opening in {hood} {city} | Pain Treatment Specialists
-**Meta description:** Pain Treatment Specialists coming soon to {hood}, {city_state}. Non-surgical pain management by Harvard-trained specialists. Book in advance.
-"""
-        meta_title = f"Pain Management Clinic Opening in {hood} {city} | Pain Treatment Specialists"
-        meta_desc = f"Pain Treatment Specialists coming soon to {hood}, {city_state}. Non-surgical pain management by Harvard-trained specialists. Book in advance."
-    else:
-        content = f"""# Pain Management in {page_title_loc}
-
-**Address:** {address}
-
-Pain Treatment Specialists in {hood}, {city_state} provides comprehensive, non-surgical pain management care. Located {local_phrase}, our specialists treat chronic pain with minimally invasive techniques.
-
-📞 **{phone}**
-
----
-
-## Your Pain Clinic in {hood}, {city}
-
-Serving patients from:
-
-{neighborhoods}
-
----
-
-## Getting Here
-
-{directions}
-
----
-
-## Our Services
-
-{treatments_list}
-
----
-
-## Conditions We Treat
-
-{conditions_list}
-
----
-
-## Why Choose Pain Treatment Specialists
-
-{trust_list}
-{doctor_sec}
----
-
-## Book Your Appointment
-
-📞 **{phone}**
-
----
-
-## Meta Tags
-
-**Title:** Pain Management in {hood}, {ctx['state']} | Pain Treatment Specialists
-**Meta description:** Non-surgical pain management in {hood}, {city_state}. Pain Treatment Specialists offers minimally invasive treatments for back pain, sciatica & more. Book today.
-"""
-        meta_title = f"Pain Management in {hood}, {ctx['state']} | Pain Treatment Specialists"
-        meta_desc = f"Non-surgical pain management in {hood}, {city_state}. Pain Treatment Specialists offers minimally invasive treatments for back pain, sciatica & more. Book today."
+    content = f"""# Meet our\n{hood} Team{coming_soon_label}\n\n{p1}\n\n{p2}\n\n{p3}"""
 
     return content, meta_title, meta_desc
 
@@ -1168,7 +1125,7 @@ def build_content_regional(brand: dict, address: str, page_type: str, ctx: dict,
     return content, meta_title, meta_desc
 
 
-def generate_content_for_brand(brand_id: str, address: str, page_type: str, doctor_name: Optional[str] = None, clinic_type: Optional[str] = "vein") -> BrandContent:
+def generate_content_for_brand(brand_id: str, address: str, page_type: str, doctor_name: Optional[str] = None, clinic_type: Optional[str] = "vein", doctor_pronouns: Optional[str] = None) -> BrandContent:
     """Generate content for a single brand."""
     brand = get_brand(brand_id)
     if not brand:
@@ -1194,7 +1151,7 @@ def generate_content_for_brand(brand_id: str, address: str, page_type: str, doct
     elif brand_id == "vip":
         content, meta_title, meta_desc = build_content_vip(brand, address, page_type, ctx, doctor_name, clinic_type)
     elif brand_id == "pts":
-        content, meta_title, meta_desc = build_content_pts(brand, address, page_type, ctx, doctor_name)
+        content, meta_title, meta_desc = build_content_pts(brand, address, page_type, ctx, doctor_name, doctor_pronouns)
     elif brand_id == "venasvarices":
         content, meta_title, meta_desc = build_content_venasvarices(brand, address, page_type, ctx, doctor_name)
     elif brand_id == "veindoctor":
@@ -1423,7 +1380,7 @@ def api_generate(req: GenerateRequest):
 
     for brand_id in req.brand_ids:
         try:
-            result = generate_content_for_brand(brand_id, req.address, req.page_type, req.doctor_name, req.clinic_type)
+            result = generate_content_for_brand(brand_id, req.address, req.page_type, req.doctor_name, req.clinic_type, req.doctor_pronouns)
             results.append(result)
         except Exception as e:
             errors.append(f"{brand_id}: {str(e)}")
