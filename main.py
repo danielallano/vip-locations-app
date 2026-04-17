@@ -1147,6 +1147,183 @@ The following are some of the minimally invasive vein treatments at our vein cli
     return content, meta_title, meta_description
 
 
+def _generate_veincenters_content(address: str, hood: str, city: str, state: str, city_state: str, page_type: str, region: str, doctor_name: Optional[str] = None) -> dict:
+    """
+    AI-generate veincenters content — 5 sections matching live site structure:
+    1) Spider & Varicose Vein Center intro (3-4 paragraphs)
+    2) Treatment options (5 treatments)
+    3) 8 Reasons to Choose
+    4) Meet Our Doctors
+    5) Directions from neighborhoods
+    """
+    coming_soon_note = "\nThe clinic is NOT yet open (Coming Soon). Adjust language — 'will offer', 'opening soon', etc." if page_type == "coming_soon" else ""
+    doctor_note = f"\nThe doctor at this location is {doctor_name}. Mention them naturally where appropriate." if doctor_name else ""
+
+    prompt = f"""You are an SEO-focused medical marketing copywriter for a vein center brand.
+
+Generate content for this vein center location:
+- Address: {address}
+- Neighborhood/City: {hood}
+- City: {city}, {state}
+- Region: {region}
+{coming_soon_note}{doctor_note}
+
+Return a JSON object with:
+
+1. "intro_paragraphs": Array of exactly 4 strings (paragraphs). Section title is "Spider and Varicose Vein Center: Do you have spider veins or varicose veins? Consult our board-certified vein doctors in {hood}."
+   - Paragraph 1: Open with questions about symptoms (spider veins, varicose veins, restless leg syndrome, leg swelling, muscle cramps, leg heaviness, leg fatigue, throbbing leg veins). Mention symptoms escalate at night or after inactivity. Urge consulting board-certified vein doctors in {hood}.
+   - Paragraph 2: Explain chronic venous insufficiency (CVI) — affects 30% of Americans, initial signs benign but escalates to leg ulcers, deep vein thrombosis, skin disorders. Treating spider veins without addressing underlying disease is pointless.
+   - Paragraph 3: The vein center is led by board-certified doctors focused on long-lasting relief. They identify and treat underlying venous insufficiency using advanced duplex ultrasound. Minimally invasive treatments. Perfect track records.
+   - Paragraph 4: Doctors have highest skills, specialize in vascular imaging, ABVLM certified. Encourage scheduling an appointment.
+
+2. "treatments": Array of exactly 5 objects with "name" and "description":
+   - Endovenous Ablation: Thermal energy or laser to destroy unhealthy veins responsible for spider and varicose veins
+   - VenaSeal: Medical-grade adhesive seals unhealthy veins' walls, making them collapse and get absorbed
+   - ClariVein: Catheter with rotating tip mechanically damages vein walls while delivering sclerosant medicine
+   - Sclerotherapy: Medicine (sclerosant) injected into small varicose and spider veins to collapse walls, making them fade
+   - Phlebectomy: Unhealthy bulging veins extracted via small incisions
+   Then add a closing sentence: each treatment has unique pros, cons, and purposes. Doctors recommend ideal treatment based on symptoms, goals, medical history, insurance, and vein size/shape.
+
+3. "eight_reasons": Array of exactly 8 strings. "8 Reasons to Choose Our Vein Centers in {region}":
+   1. Board-certified and Harvard-trained vein specialists
+   2. Only minimally invasive treatments for all vein conditions
+   3. Advanced vascular imaging tests to treat root cause
+   4. State-of-the-art vein centers accredited by IAC
+   5. Perfect track record and 5-star ratings
+   6. "No surprise billing" policy with complete cost transparency
+   7. Accept all major insurance plans including Medicare
+   8. Conveniently located in {city}
+   Localize and rephrase naturally.
+
+4. "meet_doctors_paragraph": One paragraph about the board-certified vein doctors. Mention: Ivy league-trained, passed rigorous tests, ABVLM recognition (gold standard), specialize in vascular imaging and minimally invasive treatments, uniquely capable of addressing root cause.
+
+5. "directions_intro": 2-3 sentences introducing the clinic location with full address. Mention nearby landmarks or transit. Style: "Our vein center in {hood} couldn't be more accessible. It's located at {address}..."
+
+6. "neighborhood_directions": Array of 4-6 objects with "neighborhood" and "direction" (one short sentence with road-based directions).
+
+7. "meta_title": SEO title, 50-60 chars. Include "vein center" + city. Example: "Best Vein Center in {city}, {state} | Vein Centers"
+
+8. "meta_description": SEO description, 150-160 chars. Keywords + CTA.
+
+Return ONLY valid JSON. No markdown."""
+
+    try:
+        resp = oai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.5,
+            max_tokens=2500,
+        )
+        raw = resp.choices[0].message.content.strip()
+        raw = re.sub(r'^```json\s*', '', raw)
+        raw = re.sub(r'\s*```$', '', raw)
+        return json.loads(raw)
+    except Exception:
+        return {
+            "intro_paragraphs": [
+                f"Do you have spider veins or varicose veins? Are your vein problems accompanied by restless leg syndrome, leg swelling, or leg heaviness? If so, you may have underlying vein disease, and you should consult our board-certified vein doctors in {hood} as soon as possible.",
+                f"Chronic venous insufficiency is a common condition that affects over 30% of Americans. If left untreated, vein disease leads to escalating symptoms including leg ulcers, deep vein thrombosis, and skin disorders.",
+                f"Spider Vein and Varicose Vein Center, {hood}, is led by board-certified vein doctors focused on long-lasting relief. They identify and treat the underlying venous insufficiency using advanced duplex ultrasound tests.",
+                f"Our vein doctors have the highest levels of skills and experience. Their vein care skills are confirmed by their ABVLM certification. Schedule an appointment at our vein center in {hood} to discuss your treatment options.",
+            ],
+            "treatments": [
+                {"name": "Endovenous Ablation", "description": "Thermal energy or laser energy is used to destroy the unhealthy veins responsible for spider veins and varicose veins."},
+                {"name": "VenaSeal", "description": "A medical-grade adhesive is used to seal the unhealthy veins' walls, making them eventually collapse and get absorbed by the body."},
+                {"name": "ClariVein", "description": "A catheter with a rotating tip is inserted into the diseased vein to mechanically damage its walls while delivering a sclerosant medicine."},
+                {"name": "Sclerotherapy", "description": "A medicine called sclerosant is injected into small varicose veins and spider veins to collapse their walls, making them fade away from the skin."},
+                {"name": "Phlebectomy", "description": "The unhealthy and bulging veins are extracted from the body via small incisions."},
+            ],
+            "eight_reasons": [
+                f"Your vein treatment is handled by board-certified and Harvard-trained vein specialists.",
+                "We only provide minimally invasive vein treatments for all vein conditions.",
+                "We use advanced vascular imaging tests to treat the root cause of your vein problems.",
+                f"Our state-of-the-art vein centers in {state} are accredited by the IAC.",
+                "We maintain a perfect track record and 5-star ratings from all patients.",
+                'Our "no surprise billing" policy guarantees complete transparency with costs.',
+                "We accept all major insurance plans, including Medicare.",
+                f"Our state-of-the-art vein centers in {region} are conveniently located in {city}.",
+            ],
+            "meet_doctors_paragraph": f"Our spider vein and varicose vein center in {hood} is led by Ivy league-trained doctors. Our vein doctors have passed numerous rigorous tests and professional milestones to receive formal recognition from the American Board of Venous and Lymphatic Medicine (ABVLM), a gold standard that most vein doctors aspire to. Furthermore, they specialize in the latest vascular imaging techniques and minimally invasive vein treatments, making them uniquely capable of addressing the root cause of your vein problems.",
+            "directions_intro": f"Our vein center in {hood} is located at {address}, conveniently accessible for patients throughout the area.",
+            "neighborhood_directions": [
+                {"neighborhood": "Nearby Area 1", "direction": "Take Main St toward the clinic."},
+                {"neighborhood": "Nearby Area 2", "direction": "Head south on the highway."},
+            ],
+            "meta_title": f"Best Vein Center in {city}, {state} | Vein Centers",
+            "meta_description": f"Top-rated vein center in {city}, {state}. Board-certified, Harvard-trained specialists. IAC accredited. No surprise billing. Book today.",
+        }
+
+
+def build_content_veincenters(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None) -> tuple[str, str, str]:
+    """Build veincenters[xx] content — 5 sections: intro, treatments, 8 reasons, meet doctors, directions."""
+    hood = ctx["neighborhood_name"]
+    city = ctx["city"]
+    state = ctx["state"]
+    city_state = ctx["city_state"]
+    region = brand.get("region", state)
+
+    ai = _generate_veincenters_content(address, hood, city, state, city_state, page_type, region, doctor_name)
+
+    intro_paragraphs = ai.get("intro_paragraphs", [])
+    treatments = ai.get("treatments", [])
+    eight_reasons = ai.get("eight_reasons", [])
+    meet_doctors = ai.get("meet_doctors_paragraph", "")
+    directions_intro = ai.get("directions_intro", "")
+    neighborhood_dirs = ai.get("neighborhood_directions", [])
+    meta_title = ai.get("meta_title", f"Best Vein Center in {city}, {state} | {brand['name']}")
+    meta_description = ai.get("meta_description", f"Top-rated vein center in {city}, {state}. Book today.")
+
+    coming_soon_label = " (Coming Soon)" if page_type == "coming_soon" else ""
+
+    # Section 1: Intro paragraphs
+    intro_text = "\n\n".join(intro_paragraphs)
+
+    # Section 2: Treatment options
+    treatments_bullets = "\n".join(f"- **{t['name']}:** {t['description']}" for t in treatments)
+    treatments_closing = "Each minimally invasive vein treatment has its unique pros, cons, and purposes. The vein doctors at our vein center recommend the ideal vein treatment for you based on your symptoms, goals, medical history, insurance options, and the size/shape of the diseased veins."
+
+    # Section 3: 8 Reasons
+    reasons_numbered = "\n".join(f"{i+1}. {r}" for i, r in enumerate(eight_reasons))
+
+    # Section 4: Directions
+    directions_items = ""
+    for nd in neighborhood_dirs:
+        directions_items += f"\n**How to Reach Our Vein Center Near {nd['neighborhood']}?**\n\n{nd['direction']}\n\nGet Directions >\n"
+
+    content = f"""# Spider and Varicose Vein Center:{coming_soon_label}\nDo you have spider veins or varicose veins? Consult our board-certified vein doctors in {hood}.
+
+{intro_text}
+
+---
+
+## Your Minimally Invasive Vein Treatment Options at our {hood} Vein Center.
+
+{treatments_bullets}
+
+{treatments_closing}
+
+---
+
+## 8 Reasons to Choose Our Vein Centers in {region}
+
+{reasons_numbered}
+
+---
+
+## Meet Our Board-Certified Vein Doctors in {city}, {state}
+
+{meet_doctors}
+
+---
+
+## How to Reach Our Vein Center in {city}, {state}, from Other Neighborhoods
+
+{directions_intro}
+{directions_items}"""
+
+    return content, meta_title, meta_description
+
+
 def build_content_regional(brand: dict, address: str, page_type: str, ctx: dict, doctor_name: Optional[str] = None) -> tuple[str, str, str]:
     """Build regional site content (shorter template)."""
     brand_name = brand["name"]
@@ -1305,6 +1482,8 @@ def generate_content_for_brand(brand_id: str, address: str, page_type: str, doct
         content, meta_title, meta_desc = build_content_regional_veintreatment(brand, address, page_type, ctx, doctor_name)
     elif brand.get("group") == "Vein Clinics":
         content, meta_title, meta_desc = build_content_veinclinics(brand, address, page_type, ctx, doctor_name)
+    elif brand.get("group") == "Vein Centers":
+        content, meta_title, meta_desc = build_content_veincenters(brand, address, page_type, ctx, doctor_name)
     elif brand_type in ("regional", "other"):
         content, meta_title, meta_desc = build_content_regional(brand, address, page_type, ctx, doctor_name)
     else:
